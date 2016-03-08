@@ -53,10 +53,7 @@ namespace MyProject3
             ObjRef[] Lights; // Use to create Unity lights
 
             Rhino.Input.RhinoGet.GetBool("Set your view to your desired virtual position. Hit Enter when ready", false, "Cancel", "Ready", ref UseActive);
-
-
             RhinoViewport ActiveViewport = doc.Views.ActiveView.ActiveViewport;
-
             Rhino.Input.RhinoGet.GetMultipleObjects("Select ground and terrain objects. Strike Enter if none.", true, ObjectType.AnyObject, out Ground); // Terrain will be separately exported and be given editor options relational to context.
             Rhino.Input.RhinoGet.GetMultipleObjects("Select occupiable floors. Strike Enter if none.", true, ObjectType.AnyObject, out Floors); // Floors will be separately exoprted and set as hidden objects with mesh colliders.
             Rhino.Input.RhinoGet.GetMultipleObjects("Select light objects. Strike Enter if none.", true, ObjectType.Light, out Lights); // Light objects will be exported separately. On the unity side, their centroids will be extracted and used to create new point light objects.
@@ -186,7 +183,7 @@ namespace MyProject3
 
                 var PluginList = PlugIn.GetInstalledPlugIns();
                 var asString = string.Join(";", PluginList);
-                RhinoApp.SetCommandPrompt(asString, EnglishName);
+                RhinoApp.WriteLine(asString, EnglishName);
             }
 
 
