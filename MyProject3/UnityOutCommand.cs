@@ -1,0 +1,576 @@
+﻿using System;
+using System.Collections.Generic;
+using Rhino;
+using Rhino.Display;
+using Rhino.Commands;
+using Rhino.Geometry;
+using Rhino.Input;
+using Rhino.Input.Custom;
+using Rhino.DocObjects;
+using Rhino.DocObjects.Tables;
+using System.Drawing;
+using System.Text;
+using System.IO;
+using System.Linq;
+using Rhino.PlugIns;
+
+namespace MyProject3
+{
+    [System.Runtime.InteropServices.Guid("7cce0799-e273-49c2-ab0b-fe44c5ba3417")]
+
+    public class UnityOutCommand : Command
+    {
+        public UnityOutCommand()
+        {
+            // Rhino only creates one instance of each command class defined in a
+            // plug-in, so it is safe to store a refence in a static property.
+            Instance = this;
+        }
+
+        ///<summary>The only instance of this command.</summary>
+        public static UnityOutCommand Instance
+        {
+            get; private set;
+        }
+
+        ///<returns>The command name as it appears on the Rhino command line.</returns>
+        public override string EnglishName
+        {
+            get { return "UnityOutCommand"; }
+        }
+
+        protected override Result RunCommand(RhinoDoc doc, RunMode mode)
+        {
+            // Get some user input.
+
+
+            //ObjRef Glazing = Rhino.Input.RhinoGet.GetMultipleObjects("Select glazing and clear objects. Strike Enter if none.", true);
+
+            bool UseActive = true;
+
+            ObjRef[] Ground; // The landscape
+            ObjRef[] Floors; // Create collider objects on specified floors
+            ObjRef[] Lights; // Use to create Unity lights
+
+            Rhino.Input.RhinoGet.GetBool("Set your view to your desired virtual position. Hit Enter when ready", false, "Cancel", "Ready", ref UseActive);
+
+
+            RhinoViewport ActiveViewport = doc.Views.ActiveView.ActiveViewport;
+
+            Rhino.Input.RhinoGet.GetMultipleObjects("Select ground and terrain objects. Strike Enter if none.", true, ObjectType.AnyObject, out Ground); // Terrain will be separately exported and be given editor options relational to context.
+            Rhino.Input.RhinoGet.GetMultipleObjects("Select occupiable floors. Strike Enter if none.", true, ObjectType.AnyObject, out Floors); // Floors will be separately exoprted and set as hidden objects with mesh colliders.
+            Rhino.Input.RhinoGet.GetMultipleObjects("Select light objects. Strike Enter if none.", true, ObjectType.Light, out Lights); // Light objects will be exported separately. On the unity side, their centroids will be extracted and used to create new point light objects.
+
+            // Grab all camera information from the viewport.
+
+            double ViewLens = 0;
+            var ViewH = ActiveViewport.Bounds.Height;
+            var ViewW = ActiveViewport.Bounds.Width;
+            var ViewLoc = ActiveViewport.CameraLocation;
+            var ViewTar = ActiveViewport.CameraTarget;
+            var IsOrtho = ActiveViewport.IsParallelProjection;
+            if (IsOrtho == true)
+            {
+                ViewLens = 9999999; // If camera is ortho, then give it this value for LensLength. A UnityEditor script will search for this number and convert it to a parallel camera setting.
+            }
+            else
+            {
+                ViewLens = ActiveViewport.Camera35mmLensLength;
+            }
+
+            // Define our lists of info we wish to collect
+
+            List<Guid> ObjIDs = new List<Guid>();
+            List<int> MatIDs = new List<int>();
+            List<Color> Ambient = new List<Color>();
+            List<Color> Diffuse = new List<Color>();
+            List<Color> Emission = new List<Color>();
+            List<Color> Specular = new List<Color>();
+            List<double> IOR = new List<double>();
+            List<double> Reflectivity = new List<double>();
+            List<double> Shine = new List<double>();
+            List<double> Transparency = new List<double>();
+            List<Guid> Renderer = new List<Guid>();
+            List<string> Name = new List<string>();
+            List<string> ObjGuids = new List<string>();
+            List<string> Bit = new List<string>();
+            List<string> Bump = new List<string>();
+            List<string> Enviro = new List<string>();
+
+            // Make sure lists are empty...
+
+            ObjIDs.Clear();
+            MatIDs.Clear();
+            Ambient.Clear();
+            Diffuse.Clear();
+            Emission.Clear();
+            Specular.Clear();
+            IOR.Clear();
+            Reflectivity.Clear();
+            Shine.Clear();
+            Transparency.Clear();
+            Renderer.Clear();
+            Name.Clear();
+            Bit.Clear();
+            Bump.Clear();
+            Enviro.Clear();
+
+            // Grab the enumerable lists of info from Rhino
+
+            IEnumerable<RhinoObject> DocBreps = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Brep);
+            IEnumerable<RhinoObject> DocMeshes = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Mesh);
+            IEnumerable<RhinoObject> DocSurfaces = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Surface);
+            IEnumerable<RhinoObject> DocExtrusions = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Extrusion);
+            IEnumerable<RhinoObject> DocLights = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Light);
+
+            // Transfer geometry from enumerable to collective list GeoList
+
+            List<RhinoObject> GeoList = new List<RhinoObject>();
+
+            foreach (RhinoObject item in DocBreps)
+            {
+                GeoList.Add(item);
+            }
+            foreach (RhinoObject item in DocMeshes)
+            {
+                GeoList.Add(item);
+            }
+            foreach (RhinoObject item in DocSurfaces)
+            {
+                GeoList.Add(item);
+            }
+            foreach (RhinoObject item in DocExtrusions)
+            {
+                GeoList.Add(item);
+            }
+
+            // Iterate through geometry items and get matching material Id, add to MatID's
+
+            ObjIDs.Clear();
+
+            foreach (RhinoObject geoitem in GeoList)
+            {
+                // Grab the material attached to the current item
+
+                Material itemmaterial = geoitem.GetMaterial(false);
+
+                // Not sure if getting the material Id is worth it, but collecting it anyway.
+
+                var MattableID = MaterialCheck(itemmaterial);
+
+                // Apppend found information to our lists
+
+                ObjGuids.Add(geoitem.Id.ToString());
+                MatIDs.Add(MattableID);
+                Ambient.Add(itemmaterial.AmbientColor);
+                Diffuse.Add(itemmaterial.DiffuseColor);
+                Emission.Add(itemmaterial.EmissionColor);
+                Specular.Add(itemmaterial.SpecularColor);
+                IOR.Add(itemmaterial.IndexOfRefraction);
+                Reflectivity.Add(itemmaterial.Reflectivity);
+                Shine.Add(itemmaterial.Shine);
+                Transparency.Add(itemmaterial.Transparency);
+                Renderer.Add(itemmaterial.RenderPlugInId);
+                Name.Add(itemmaterial.Name);
+
+                // Having a difficult time getting the map paths to write. Skipping this until later.
+
+                //var BitFile = itemmaterial.GetBitmapTexture.ToString;
+                //var BumpFile = itemmaterial.GetBumpTexture.ToString;
+                //var EnviroFile = itemmaterial.GetBumpTexture.ToString;
+                //Bit.Add(BitFile.FileName);
+                //Bump.Add(BumpFile.FileName);
+                //Enviro.Add(EnviroFile.FileName);
+
+                // Need to use OBJ export for plugins..sheeeeeeeeeeeeeit.
+
+                var PluginList = PlugIn.GetInstalledPlugIns();
+                var asString = string.Join(";", PluginList);
+                RhinoApp.SetCommandPrompt(asString, EnglishName);
+            }
+
+
+            // Write the settings file:
+
+            bool SuccessBool = WriteOut(ObjGuids, MatIDs, Ambient, Diffuse, Emission, Specular, IOR, Reflectivity, Shine, Transparency, Renderer, Name, Bit, Bump, Enviro, ViewH, ViewW, ViewLoc, ViewTar, ViewLens);
+
+            // Export the Bitmap Table
+
+            RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unicycle", 2);
+            
+            // Return some beeps
+
+
+            if (SuccessBool == true)
+            {
+                Console.Beep();
+            }
+            else
+            {
+                Console.Beep();
+                Console.Beep();
+                Console.Beep();
+            }
+            
+            
+            return Result.Success; // End the command
+        }
+
+
+        protected int MaterialCheck(Material MaterialToChk)
+        {
+            Guid Id = MaterialToChk.Id;
+            var MatTableID = RhinoDoc.ActiveDoc.Materials.Find(Id, false);
+
+            // Note - If no material, will return value -1.
+
+            return MatTableID;
+        }
+
+        protected bool WriteOut(List<string> ObjGuids, List<int> MatIDs, List<Color> Ambient, List<Color> Diffuse, List<Color> Emission, List<Color> Specular, List<double> IOR, List<double> Reflectivity, List<double> Shine, List<double> Transparency, List<Guid> Renderer, List<string> Name, List<string> Bit, List<string> Bump, List<string> Enviro, double ViewH, double ViewW, Point3d ViewLoc, Point3d ViewTar, double ViewLens)
+        {
+            // Make a debug checklist that will be pushed into a second file.
+
+
+            List<string> DebugChecklist = new List<string>();
+
+            //  OBJ GUIDS
+
+            string GUIDS = string.Join("!", ObjGuids.ToArray());
+
+            if (GUIDS != null)
+            {
+                DebugChecklist.Add("Guids = GOOD");
+            } else {
+                DebugChecklist.Add("Guids = ERROR");
+            }
+
+            //  MAT IDS  need to convert all members into strings before I can use the above snippet.
+
+            List<string> StrMatIds = new List<string>();
+
+            foreach (int ID in MatIDs)
+            {
+                string idString = ID.ToString();
+                StrMatIds.Add(idString);
+            }
+
+            string MATIDS = string.Join("!", StrMatIds.ToArray());
+
+            if (MATIDS != null)
+            {
+                DebugChecklist.Add("Mat IDS = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Mat IDS = ERROR");
+            }
+
+            // AMBIENT need to see how color formats to string.
+
+            List<string> AmbientStr = new List<string>();
+
+            foreach (Color col in Ambient)
+            {
+                string ColorString = col.ToString();
+                AmbientStr.Add(ColorString);
+            }
+
+            /////////////////DEBUG///////////////////////////
+
+            RhinoApp.WriteLine(AmbientStr.Count.ToString(), EnglishName);
+
+            string AMBIENT = string.Join("!", AmbientStr.ToArray());
+
+            if (AMBIENT != null)
+            {
+                DebugChecklist.Add("Ambient = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Ambient= ERROR");
+            }
+
+
+            // DIFFUSE need to see how color formats to string.
+
+            List<string> DiffuseStr = new List<string>();
+
+            foreach (Color col in Diffuse)
+            {
+                string ColorString = col.ToString();
+                DiffuseStr.Add(ColorString);
+            }
+
+            string DIFFUSE = string.Join("!", DiffuseStr.ToArray());
+
+            if (DIFFUSE != null)
+            {
+                DebugChecklist.Add("Diffuse = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Diffuse = ERROR");
+            }
+
+
+            // EMISSION same deal. 
+
+            List<string> EmissStr = new List<string>();
+
+            foreach (Color col in Emission)
+            {
+                string ColorString = col.ToString();
+                EmissStr.Add(ColorString);
+            }
+
+            string EMISSION = string.Join("!", EmissStr.ToArray());
+
+            if (EMISSION != null)
+            {
+                DebugChecklist.Add("Emission = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Emission = ERROR");
+            }
+
+            // SPECULAR
+
+            List<string> SpecStr = new List<string>();
+
+            foreach (Color col in Specular)
+            {
+                string ColorString = col.ToString();
+                SpecStr.Add(ColorString);
+            }
+
+            string SPECULAR = string.Join("!", SpecStr.ToArray());
+
+            if (SPECULAR != null)
+            {
+                DebugChecklist.Add("Specular = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Specular = ERROR");
+            }
+
+            // IOR - Double, same idea as Int
+
+            List<string> IORStr = new List<string>();
+
+            foreach (double IORitem in IOR)
+            {
+                string IORiteamStr = IORitem.ToString();
+                IORStr.Add(IORiteamStr);
+            }
+
+            string INDEXOFREF = string.Join("!", IORStr.ToArray());
+
+            if (INDEXOFREF != null)
+            {
+                DebugChecklist.Add("IOR = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("IOR = ERROR");
+            }
+
+            // REFLECTIVITY - Double
+
+            List<string> RefStr = new List<string>();
+
+            foreach (double RefItem in Reflectivity)
+            {
+                string RefItemStr = RefItem.ToString();
+                RefStr.Add(RefItemStr);
+            }
+
+            string REFLECTIVITY = string.Join("!", RefStr.ToArray());
+
+            if (REFLECTIVITY != null)
+            {
+                DebugChecklist.Add("Reflectivity = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Reflectivity = ERROR");
+            }
+
+            // SHINE - Double
+
+            List<string> ShineStr = new List<string>();
+
+            foreach (double ShineItem in Shine)
+            {
+                string ShineItemStr = ShineItem.ToString();
+                ShineStr.Add(ShineItemStr);
+            }
+
+            string SHINE = string.Join("!", ShineStr.ToArray());
+
+            if (SHINE != null)
+            {
+                DebugChecklist.Add("Shine = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Shine = ERROR");
+            }
+
+            // TRANSPARENCY - Double
+
+            List<string> TransStr = new List<string>();
+
+            foreach (double TransItem in Transparency)
+            {
+                string TransStrItem = TransItem.ToString();
+                TransStr.Add(TransStrItem);
+            }
+
+            string TRANSPARENCY = string.Join("!", TransStr.ToArray());
+
+            if (TRANSPARENCY != null)
+            {
+                DebugChecklist.Add("Transparency = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Transparency = ERROR");
+            }
+
+            // RENDERER - Guid
+
+            List<string> RenderStr = new List<string>();
+
+            foreach (Guid RendItem in Renderer)
+            {
+                string rendstr = RendItem.ToString();
+                RenderStr.Add(rendstr);
+            }
+
+            string RENDERER = string.Join("!", RenderStr.ToArray());
+
+            if (RENDERER != null)
+            {
+                DebugChecklist.Add("Renderer = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Renderer = ERROR");
+            }
+
+            // NAME - String
+
+            string NAMES = string.Join("!", Name.ToArray());
+
+            if (NAMES != null)
+            {
+                DebugChecklist.Add("Names = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Names = ERROR");
+            }
+
+            // BIT - String of path
+
+            string BITS = string.Join("!", Bit.ToArray());
+
+            if (BITS != null)
+            {
+                DebugChecklist.Add("Bitmaps = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Bitmaps = ERROR");
+            }
+
+            // BUMP - String of path
+
+            string BUMP = string.Join("!", Bump.ToArray());
+
+            if (BUMP != null)
+            {
+                DebugChecklist.Add("Bump = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Bump = ERROR");
+            }
+
+            // ENVIRO - String of path
+
+            string ENVIRO = string.Join("!", Enviro.ToArray());
+
+            if (ENVIRO != null)
+            {
+                DebugChecklist.Add("Enviroment Map = GOOD");
+            }
+            else
+            {
+                DebugChecklist.Add("Environment Map = ERROR");
+            }
+
+            // VIEWH - Int
+            // ViewW - Int
+            // ViewLoc - Point3d
+
+            string VIEWLOC = ViewLoc.ToString();
+
+            // ViewTar - Point3d
+
+            string VIEWTAR = ViewTar.ToString();
+
+            // ViewLens - Double
+
+            //------------------------------------------------------------------------------------------------------//
+
+            // RETURN DEBUG IN CONSOLE
+
+            bool Success = true;
+
+            string ChecklistFlat = string.Join(" | ", DebugChecklist.ToArray());
+
+            RhinoApp.WriteLine(ChecklistFlat, EnglishName);
+
+
+            // WRITE FILE //
+
+            // Create the Unicycle Folder on C
+            //string TodayStr = System.DateTime.Now.ToString();  // Will work on creating a custom path based on filename..
+            //string CurrentDocName = RhinoDoc.ActiveDoc.DocumentId.ToString();
+            //string PathHeader = "C:\\Unicycle";
+            //string FileType = ".txt";
+
+            //string DocPath = RhinoDoc.ActiveDoc.Path.ToString();
+            //var NewPath = Path.Combine(DocPath, "Unicycle");
+
+            Directory.CreateDirectory("C:\\Unicycle");
+            string filename = "C:\\Unicycle\\Settings.txt";
+            File.Delete("C:\\Unicycle\\Settings.txt"); // Clear for next file
+            FileStream fs = null;
+
+            try
+            {
+                fs = new FileStream(filename, FileMode.CreateNew);
+                using (StreamWriter writer = new StreamWriter(fs, Encoding.Unicode))
+                {
+                    writer.Write(GUIDS + Environment.NewLine + MATIDS + Environment.NewLine + AMBIENT + Environment.NewLine + AMBIENT + Environment.NewLine + DIFFUSE + Environment.NewLine + EMISSION + Environment.NewLine + SPECULAR + Environment.NewLine + INDEXOFREF + Environment.NewLine + REFLECTIVITY + Environment.NewLine + SHINE + Environment.NewLine + RENDERER + Environment.NewLine + NAMES + Environment.NewLine + BITS + Environment.NewLine + BUMP + Environment.NewLine + ENVIRO + Environment.NewLine + ViewH + Environment.NewLine + ViewW + Environment.NewLine + VIEWLOC + Environment.NewLine + VIEWTAR + Environment.NewLine + ViewLens); // I will add the contents to be sent to the streamwriter file within here.
+                }
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Dispose();
+            }
+
+            return Success;
+        }
+
+
+
+    }
+
+}
