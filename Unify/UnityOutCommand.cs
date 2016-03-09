@@ -42,10 +42,6 @@ namespace MyProject3
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
-            // Get some user input.
-
-
-            //ObjRef Glazing = Rhino.Input.RhinoGet.GetMultipleObjects("Select glazing and clear objects. Strike Enter if none.", true);
 
             bool UseActive = true;
 
@@ -53,11 +49,20 @@ namespace MyProject3
             ObjRef[] Floors; // Create collider objects on specified floors
             ObjRef[] Lights; // Use to create Unity lights
 
+            // Get some user input.
+
             Rhino.Input.RhinoGet.GetBool("Set your view to your desired virtual position. Hit Enter when ready", false, "Cancel", "Ready", ref UseActive);
             RhinoViewport ActiveViewport = doc.Views.ActiveView.ActiveViewport;
             Rhino.Input.RhinoGet.GetMultipleObjects("Select ground and terrain objects. Strike Enter if none.", true, ObjectType.AnyObject, out Ground); // Terrain will be separately exported and be given editor options relational to context.
             Rhino.Input.RhinoGet.GetMultipleObjects("Select occupiable floors. Strike Enter if none.", true, ObjectType.AnyObject, out Floors); // Floors will be separately exoprted and set as hidden objects with mesh colliders.
             Rhino.Input.RhinoGet.GetMultipleObjects("Select light objects. Strike Enter if none.", true, ObjectType.Light, out Lights); // Light objects will be exported separately. On the unity side, their centroids will be extracted and used to create new point light objects.
+
+            // Create the directory where document information will be stored.
+
+            string settingspath = @"C:\Unify\Settings.txt";
+            string dirpath = @"C:\Unify";
+            Directory.CreateDirectory("C:\\Unify");
+
 
             // Grab all camera information from the viewport.
 
@@ -142,9 +147,17 @@ namespace MyProject3
                 GeoList.Add(item);
             }
 
-            // Iterate through geometry items and get matching material Id, add to MatID's
 
-            ObjIDs.Clear();
+
+            // Match up order of current settings file in case of update. New items will be added to the end, old items will keep their spots, and deleted items will be converted to null.
+
+            if (File.Exists(settingspath))
+            {
+                MatchSettings(GeoList, settingspath);
+            }
+
+
+            // Iterator for appending geometry attributes
 
             int count = 0;
 
@@ -159,6 +172,7 @@ namespace MyProject3
                 var MattableID = MaterialCheck(itemmaterial);
 
                 // Apppend found information to our lists
+
 
                 ObjGuids.Add(geoitem.Id.ToString());
                 MatIDs.Add(MattableID);
@@ -190,7 +204,7 @@ namespace MyProject3
                 var PluginList = PlugIn.GetInstalledPlugIns();
                 var asString = string.Join(";", PluginList);
                 RhinoApp.WriteLine(asString, EnglishName);
-                string filePath = @"C:\Unicycle\Item";
+                string filePath = @"C:\Unify\Item";
                 string extension = ".obj";
                 string script = string.Concat("_-Export ", filePath, count.ToString(), extension, " y=n", " _Enter _Enter");
                 RhinoDoc.ActiveDoc.Objects.Select(ItemRef);
@@ -200,6 +214,7 @@ namespace MyProject3
                 RhinoApp.WriteLine(count.ToString(), EnglishName); // Debugger
                 RhinoApp.RunScript("_-SelNone", true);
                 count += 1;
+
             }
 
 
@@ -209,7 +224,7 @@ namespace MyProject3
 
             // Export the Bitmap Table
 
-            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unicycle\\", 2);
+            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unify\\", 2);
             
             // Return some beeps
 
@@ -570,18 +585,17 @@ namespace MyProject3
 
             // WRITE FILE //
 
-            // Create the Unicycle Folder on C
+            // Create the Unify Folder on C
             //string TodayStr = System.DateTime.Now.ToString();  // Will work on creating a custom path based on filename..
             //string CurrentDocName = RhinoDoc.ActiveDoc.DocumentId.ToString();
-            //string PathHeader = "C:\\Unicycle";
+            //string PathHeader = "C:\\Unify";
             //string FileType = ".txt";
 
             //string DocPath = RhinoDoc.ActiveDoc.Path.ToString();
-            //var NewPath = Path.Combine(DocPath, "Unicycle");
+            //var NewPath = Path.Combine(DocPath, "Unify");
 
-            Directory.CreateDirectory("C:\\Unicycle");
-            string filename = "C:\\Unicycle\\Settings.txt";
-            File.Delete("C:\\Unicycle\\Settings.txt"); // Clear for next file
+            string filename = "C:\\Unify\\Settings.txt"; 
+            File.Delete("C:\\Unify\\Settings.txt"); // Clear for next file
             FileStream fs = null;
 
             try
@@ -601,6 +615,48 @@ namespace MyProject3
             return Success;
         }
 
+        protected void MatchSettings(List<RhinoObject> Geolist,string settingspath)
+        {
+            List<int> newHashes = new List<int>();
+            List<int> oldHashes = new List<int>();
+
+            newHashes.Clear();
+            oldHashes.Clear();
+                 
+            foreach (var GeoItem in Geolist)
+            {
+                var ItemHash = GeoItem.Id.GetHashCode();
+                newHashes.Add(ItemHash);
+
+            }
+
+            string Readline;
+            string[] Entries;
+
+            try
+            {
+                using (StreamReader theReader = new StreamReader(settingspath)) 
+                {
+                    do
+                    {
+                        Readline = theReader.ReadLine();
+
+                        if (Readline != null)
+                        {
+                            Entries = Readline.Split(char.Parse("!"));
+                        }
+                    }
+                    while (Readline != null);
+
+                    theReader.Close();
+                }
+            }
+            catch (System.Exception e)
+            {
+                RhinoApp.WriteLine(e.Message, EnglishName);
+                RhinoApp.WriteLine("Error - Settings file Could not be parsed.", EnglishName);
+            } 
+        }
     }
 
 }
