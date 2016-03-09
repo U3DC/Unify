@@ -16,7 +16,8 @@ using Rhino.PlugIns;
 
 namespace MyProject3
 {
-    [System.Runtime.InteropServices.Guid("7cce0799-e273-49c2-ab0b-fe44c5ba3417")]
+    [System.Runtime.InteropServices.Guid("7cce0799-e273-49c2-ab0b-fe44c5ba3417"),
+        Rhino.Commands.CommandStyle(Rhino.Commands.Style.ScriptRunner)] // Added Scriptrunner prevents Rhino command collision f-ups.
 
     public class UnityOutCommand : Command
     {
@@ -145,6 +146,8 @@ namespace MyProject3
 
             ObjIDs.Clear();
 
+            int count = 0;
+
             foreach (RhinoObject geoitem in GeoList)
             {
                 // Grab the material attached to the current item
@@ -181,9 +184,22 @@ namespace MyProject3
 
                 // Need to use OBJ export for plugins..sheeeeeeeeeeeeeit.
 
+                var ItemGuid = geoitem.Id;
+                var ItemRef = new ObjRef(ItemGuid);
+
                 var PluginList = PlugIn.GetInstalledPlugIns();
                 var asString = string.Join(";", PluginList);
                 RhinoApp.WriteLine(asString, EnglishName);
+                string filePath = @"C:\Unicycle\Item";
+                string extension = ".obj";
+                string script = string.Concat("_-Export ", filePath, count.ToString(), extension, " y=n", " _Enter _Enter");
+                RhinoDoc.ActiveDoc.Objects.Select(ItemRef);
+                RhinoApp.WriteLine(script, EnglishName); // Debugger
+                RhinoApp.RunScript(script, false);
+                // "-Export " + FILE_NAME + ".obj y=n Enter Enter"
+                RhinoApp.WriteLine(count.ToString(), EnglishName); // Debugger
+                RhinoApp.RunScript("_-SelNone", true);
+                count += 1;
             }
 
 
@@ -193,7 +209,7 @@ namespace MyProject3
 
             // Export the Bitmap Table
 
-            RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unicycle", 2);
+            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unicycle\\", 2);
             
             // Return some beeps
 
@@ -208,8 +224,26 @@ namespace MyProject3
                 Console.Beep();
                 Console.Beep();
             }
-            
-            
+
+            // OBJ Export Tests
+
+            Guid objExporter = Guid.Parse("45758256-e154-4995-bd0b-d5173a33c281");
+            if (objExporter != null)
+            {
+                RhinoApp.WriteLine(objExporter.ToString(), EnglishName);
+                var OBJExporter = PlugIn.Find(objExporter);
+                var OBJModules = OBJExporter.Assembly.FullName;
+                object Sets = OBJExporter.Assembly;
+
+                var Modulename = string.Join(",", OBJModules.ToString());
+                RhinoApp.WriteLine("TBD", EnglishName);
+            }
+            else
+            {
+                RhinoApp.WriteLine("Guid failed to collect", EnglishName);
+            }
+
+                           
             return Result.Success; // End the command
         }
 
@@ -218,6 +252,7 @@ namespace MyProject3
         {
             Guid Id = MaterialToChk.Id;
             var MatTableID = RhinoDoc.ActiveDoc.Materials.Find(Id, false);
+            
 
             // Note - If no material, will return value -1.
 
@@ -243,7 +278,7 @@ namespace MyProject3
             }
 
             //  MAT IDS  need to convert all members into strings before I can use the above snippet.
-
+            
             List<string> StrMatIds = new List<string>();
 
             foreach (int ID in MatIDs)
@@ -565,8 +600,6 @@ namespace MyProject3
 
             return Success;
         }
-
-
 
     }
 
