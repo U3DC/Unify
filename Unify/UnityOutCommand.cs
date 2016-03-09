@@ -187,16 +187,7 @@ namespace MyProject3
                 Renderer.Add(itemmaterial.RenderPlugInId);
                 Name.Add(itemmaterial.Name);
 
-                // Having a difficult time getting the map paths to write. Skipping this until later.
-
-                //var BitFile = itemmaterial.GetBitmapTexture.ToString;
-                //var BumpFile = itemmaterial.GetBumpTexture.ToString;
-                //var EnviroFile = itemmaterial.GetBumpTexture.ToString;
-                //Bit.Add(BitFile.FileName);
-                //Bump.Add(BumpFile.FileName);
-                //Enviro.Add(EnviroFile.FileName);
-
-                // Need to use OBJ export for plugins..sheeeeeeeeeeeeeit.
+                // Using Runscript to export objects
 
                 var ItemGuid = geoitem.Id;
                 var ItemRef = new ObjRef(ItemGuid);
