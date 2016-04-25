@@ -14,6 +14,8 @@ using System.IO;
 using System.Linq;
 using Rhino.PlugIns;
 
+// Unify: Leland Jobson
+
 namespace MyProject3
 {
     [System.Runtime.InteropServices.Guid("7cce0799-e273-49c2-ab0b-fe44c5ba3417"),
@@ -43,13 +45,24 @@ namespace MyProject3
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
 
+
+
+            /* TO DO
+               - Replace paths with AppData path
+               - Parse blocks into separate objs and lists of positions/orientations
+               - Use Gh obj exporter
+
+            */
+
+
+
             bool UseActive = true;
 
             ObjRef[] Ground; // The landscape
             ObjRef[] Floors; // Create collider objects on specified floors
             ObjRef[] Lights; // Use to create Unity lights
 
-            // Get some user input.
+            // Get user Input
 
             Rhino.Input.RhinoGet.GetBool("Set your view to your desired virtual position. Hit Enter when ready", false, "Cancel", "Ready", ref UseActive);
             RhinoViewport ActiveViewport = doc.Views.ActiveView.ActiveViewport;
@@ -59,27 +72,18 @@ namespace MyProject3
 
             // Create the directory where document information will be stored.
 
-            string settingspath = @"C:\Unify\Settings.txt";
-            string dirpath = @"C:\Unify";
-            Directory.CreateDirectory("C:\\Unify");
+            Directory.CreateDirectory(@"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models");
+            string settingspath = @"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models\Settings.txt";
 
 
             // Grab all camera information from the viewport.
 
-            double ViewLens = 0;
+            double ViewLens = ActiveViewport.Camera35mmLensLength;
             var ViewH = ActiveViewport.Bounds.Height;
             var ViewW = ActiveViewport.Bounds.Width;
             var ViewLoc = ActiveViewport.CameraLocation;
             var ViewTar = ActiveViewport.CameraTarget;
             var IsOrtho = ActiveViewport.IsParallelProjection;
-            if (IsOrtho == true)
-            {
-                ViewLens = 9999999; // If camera is ortho, then give it this value for LensLength. A UnityEditor script will search for this number and convert it to a parallel camera setting.
-            }
-            else
-            {
-                ViewLens = ActiveViewport.Camera35mmLensLength;
-            }
 
             // Define our lists of info we wish to collect
 
@@ -100,7 +104,7 @@ namespace MyProject3
             List<string> Bump = new List<string>();
             List<string> Enviro = new List<string>();
 
-            // Make sure lists are empty...
+            // Clear Lists
 
             ObjIDs.Clear();
             MatIDs.Clear();
@@ -118,33 +122,21 @@ namespace MyProject3
             Bump.Clear();
             Enviro.Clear();
 
-            // Grab the enumerable lists of info from Rhino
+            // Grab blocks and non blocks
 
-            IEnumerable<RhinoObject> DocBreps = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Brep);
-            IEnumerable<RhinoObject> DocMeshes = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Mesh);
-            IEnumerable<RhinoObject> DocSurfaces = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Surface);
-            IEnumerable<RhinoObject> DocExtrusions = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Extrusion);
-            IEnumerable<RhinoObject> DocLights = RhinoDoc.ActiveDoc.Objects.GetObjectList(ObjectType.Light);
+            List<RhinoObject> blockObjects = new List<RhinoObject>();
+            List<RhinoObject> nonblockObjects = new List<RhinoObject>();
 
-            // Transfer geometry from enumerable to collective list GeoList
-
-            List<RhinoObject> GeoList = new List<RhinoObject>();
-
-            foreach (RhinoObject item in DocBreps)
+            ObjectTable allObjects = Rhino.RhinoDoc.ActiveDoc.Objects;
+            foreach (RhinoObject anObject in allObjects)
             {
-                GeoList.Add(item);
-            }
-            foreach (RhinoObject item in DocMeshes)
-            {
-                GeoList.Add(item);
-            }
-            foreach (RhinoObject item in DocSurfaces)
-            {
-                GeoList.Add(item);
-            }
-            foreach (RhinoObject item in DocExtrusions)
-            {
-                GeoList.Add(item);
+                if (anObject.IsReference == true)
+                {
+                    nonblockObjects.Add(anObject);
+                } else
+                {
+                    blockObjects.Add(anObject);
+                }
             }
 
 
@@ -153,7 +145,7 @@ namespace MyProject3
 
             if (File.Exists(settingspath))
             {
-                MatchSettings(GeoList, settingspath);
+                MatchSettings(nonblockObjects, settingspath);
             }
 
 
@@ -161,7 +153,7 @@ namespace MyProject3
 
             int count = 0;
 
-            foreach (RhinoObject geoitem in GeoList)
+            foreach (RhinoObject geoitem in nonblockObjects)
             {
                 // Grab the material attached to the current item
 
@@ -195,13 +187,13 @@ namespace MyProject3
                 var PluginList = PlugIn.GetInstalledPlugIns();
                 var asString = string.Join(";", PluginList);
                 RhinoApp.WriteLine(asString, EnglishName);
-                string filePath = @"C:\Unify\Item";
+                string filePath = @"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models\Item";
                 string extension = ".obj";
-                string script = string.Concat("_-Export ", filePath, count.ToString(), extension, " y=n", " _Enter _Enter");
+                string script = string.Concat("_-Export ", filePath, count.ToString(), extension, " y=y", " _Enter _Enter");
                 RhinoDoc.ActiveDoc.Objects.Select(ItemRef);
                 RhinoApp.WriteLine(script, EnglishName); // Debugger
                 RhinoApp.RunScript(script, false);
-                // "-Export " + FILE_NAME + ".obj y=n Enter Enter"
+                // "-Export " + FILE_NAME + ".obj y=y Enter Enter"
                 RhinoApp.WriteLine(count.ToString(), EnglishName); // Debugger
                 RhinoApp.RunScript("_-SelNone", true);
                 count += 1;
@@ -215,7 +207,7 @@ namespace MyProject3
 
             // Export the Bitmap Table
 
-            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles("C:\\Unify\\", 2);
+            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles(@"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models\", 2);
             
             // Return some beeps
 
@@ -257,8 +249,7 @@ namespace MyProject3
         protected int MaterialCheck(Material MaterialToChk)
         {
             Guid Id = MaterialToChk.Id;
-            var MatTableID = RhinoDoc.ActiveDoc.Materials.Find(Id, false);
-            
+            var MatTableID = RhinoDoc.ActiveDoc.Materials.Find(Id, false);       
 
             // Note - If no material, will return value -1.
 
@@ -585,8 +576,8 @@ namespace MyProject3
             //string DocPath = RhinoDoc.ActiveDoc.Path.ToString();
             //var NewPath = Path.Combine(DocPath, "Unify");
 
-            string filename = "C:\\Unify\\Settings.txt"; 
-            File.Delete("C:\\Unify\\Settings.txt"); // Clear for next file
+            string filename = @"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models\Settings.txt"; // Need to connect this back to the original public statement.
+            File.Delete(@"C:\Users\LJobson\Downloads\Unity_Research\Solar\Assets\Models\Settings.txt"); // Clear for next file
             FileStream fs = null;
 
             try
@@ -606,7 +597,7 @@ namespace MyProject3
             return Success;
         }
 
-        protected void MatchSettings(List<RhinoObject> Geolist,string settingspath)
+        protected void MatchSettings(List<RhinoObject> nonblockObjects,string settingspath)
         {
             List<int> newHashes = new List<int>();
             List<int> oldHashes = new List<int>();
@@ -614,7 +605,7 @@ namespace MyProject3
             newHashes.Clear();
             oldHashes.Clear();
                  
-            foreach (var GeoItem in Geolist)
+            foreach (var GeoItem in nonblockObjects)
             {
                 var ItemHash = GeoItem.Id.GetHashCode();
                 newHashes.Add(ItemHash);
