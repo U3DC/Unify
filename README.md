@@ -10,7 +10,7 @@ This is work in progress.
 1. Obj export of Rhino Geometry to custom location. 
 2. HUD Display (includes map, time of day, etc)
 
-Licence
+License
 ============
 
 Unify: A Plugin for Rhino and Unity (GPL) started by Leland Jobsen.
