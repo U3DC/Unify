@@ -1,5 +1,5 @@
 #Unify
-####Rhino to Unity export, C#
+####Rhino to Unity exporter
 
 ![Screenshot](http://api.ning.com/files/SJDB94xeBdkpvzmAudPOWpVMfuH4LDwh6N0LN4D9mBc5hiw-LX2WQljKb6D1*PAz4-zUvXMVUR5XNpfniGYrD3onoNgR0vC1/UnifyLogo.png?crop=1%3A1&width=171)
 
@@ -13,7 +13,7 @@ This is work in progress.
 License
 ============
 
-Unify: A Plugin for Rhino and Unity (GPL) started by Leland Jobsen.
+Unify: A Rhino to Unity exporter (GPL) started by Leland Jobsen.
 
 Copyright (c) 2016-Present, Leland Jobsen
 
