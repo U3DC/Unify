@@ -13,9 +13,9 @@ This is work in progress.
 License
 ============
 
-Unify: A Rhino to Unity exporter (GPL) started by Leland Jobsen.
+Unify: A Rhino to Unity exporter (GPL) started by Leland Jobson.
 
-Copyright (c) 2016-Present, Leland Jobsen
+Copyright (c) 2016-Present, Leland Jobson
 
 Unify is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
