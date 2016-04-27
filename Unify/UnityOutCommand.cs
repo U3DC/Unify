@@ -6,7 +6,7 @@ using Rhino.Input;
 using Rhino.DocObjects;
 using Rhino.DocObjects.Tables;
 using System.Windows.Forms;
-using Unify.Utilities;
+using UnityUtilities;
 
 // Unify: Leland Jobson
 
@@ -75,10 +75,10 @@ namespace Unify
             List<Guid> objToExport = new List<Guid>();
 
             // get all geometry objects
-            foreach (RhinoObject geoitem in allObjects)
+            foreach (RhinoObject ro in allObjects)
             {
-                writeOutList.Add(new UnifyObj(geoitem));
-                objToExport.Add(geoitem.Id);
+                writeOutList.Add(new UnifyGeometry(ro));
+                objToExport.Add(ro.Id);
             }
 
             // get all named view objects
@@ -94,7 +94,7 @@ namespace Unify
             }
 
             // export to OBJ
-            Utilities.InputData export = new Utilities.InputData(); 
+            InputData export = new InputData(); 
             export.ExportOBJ(objToExport, folderPath);
 
             // write the settings file
