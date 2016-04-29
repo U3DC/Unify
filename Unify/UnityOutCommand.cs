@@ -6,9 +6,11 @@ using Rhino.Input;
 using Rhino.DocObjects;
 using Rhino.DocObjects.Tables;
 using System.Windows.Forms;
-using UnityUtilities;
+using Unify.Utilities;
 
 // Unify: Leland Jobson
+// Unify: Konrad K Sobon
+// Unify: David Mans
 
 namespace Unify
 {
@@ -33,16 +35,12 @@ namespace Unify
         ///<returns>The command name as it appears on the Rhino command line.</returns>
         public override string EnglishName
         {
-            get { return "UnityOutCommand"; }
+            get { return "UnifyExport"; }
         }
 
         public string folderPath = "";
         public string settingsPath = "";
 
-        /* TO DO
-            - Parse blocks into separate objs and lists of positions/orientations
-            - Use Gh obj exporter
-        */
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
             // Get desired folder location
@@ -58,51 +56,65 @@ namespace Unify
                 return Result.Cancel;
             }
 
-            ObjRef[] Ground; // The landscape
-            ObjRef[] Floors; // Create collider objects on specified floors
+            //ObjRef[] Ground; // The landscape
+            //ObjRef[] Floors; // Create collider objects on specified floors
 
-            // Terrain will be separately exported and be given editor options relational to context.
-            RhinoGet.GetMultipleObjects("Select ground and terrain objects. Strike Enter if none.", true, ObjectType.AnyObject, out Ground);
+            //// Terrain will be separately exported and be given editor options relational to context.
+            //RhinoGet.GetMultipleObjects("Select ground and terrain objects. Strike Enter if none.", true, ObjectType.AnyObject, out Ground);
 
-            // Floors will be separately exoprted and set as hidden objects with mesh colliders.
-            RhinoGet.GetMultipleObjects("Select occupiable floors. Strike Enter if none.", true, ObjectType.AnyObject, out Floors);
+            //// Floors will be separately exoprted and set as hidden objects with mesh colliders.
+            //RhinoGet.GetMultipleObjects("Select occupiable floors. Strike Enter if none.", true, ObjectType.AnyObject, out Floors);
 
-            ObjectTable allObjects = Rhino.RhinoDoc.ActiveDoc.Objects;
-            NamedViewTable allCameras = Rhino.RhinoDoc.ActiveDoc.NamedViews;
-            LightTable allLights = Rhino.RhinoDoc.ActiveDoc.Lights;
-
-            List<object> writeOutList = new List<object>();
+            List<List<object>> writeOutList = new List<List<object>>();
             List<Guid> objToExport = new List<Guid>();
 
             // get all geometry objects
+            ObjectTable allObjects = Rhino.RhinoDoc.ActiveDoc.Objects;
+            List<object> geoList = new List<object>();
             foreach (RhinoObject ro in allObjects)
             {
-                writeOutList.Add(new UnifyGeometry(ro));
+                geoList.Add(new UnifyGeometry(ro));
                 objToExport.Add(ro.Id);
             }
+            writeOutList.Add(geoList);
 
             // get all named view objects
+            NamedViewTable allCameras = Rhino.RhinoDoc.ActiveDoc.NamedViews;
+            List<object> camList = new List<object>();
             foreach (ViewInfo vi in allCameras)
             {
-                writeOutList.Add(new UnifyCamera(vi));
+                camList.Add(new UnifyCamera(vi));
             }
+            writeOutList.Add(camList);
 
             // get all lights
+            LightTable allLights = Rhino.RhinoDoc.ActiveDoc.Lights;
+            List<object> lightList = new List<object>();
             foreach (LightObject lo in allLights)
             {
-                writeOutList.Add(new UnifyLight(lo));
+                lightList.Add(new UnifyLight(lo));
             }
+            writeOutList.Add(lightList);
+
+            // get all materials by layers
+            LayerTable allLayers = Rhino.RhinoDoc.ActiveDoc.Layers;
+            List<object> matList = new List<object>();
+            foreach (Layer l in allLayers)
+            {
+                int renderMatIndex = l.RenderMaterialIndex;
+                Material mat = Rhino.RhinoDoc.ActiveDoc.Materials[renderMatIndex];
+                UnifyMaterial uMat = new UnifyMaterial(mat);
+                string matUniqueName = l.FullPath.Replace("::", "__");
+                uMat.UniqueName = matUniqueName;
+                matList.Add(uMat);
+            }
+            writeOutList.Add(matList);
 
             // export to OBJ
-            InputData export = new InputData(); 
-            export.ExportOBJ(objToExport, folderPath);
+            Utility.ExportOBJ(objToExport, folderPath);
 
             // write the settings file
-            bool success = export.WriteSetings(writeOutList, settingsPath);
-
-            // Export the Bitmap Table
-            var Bitmaps = RhinoDoc.ActiveDoc.Bitmaps.ExportToFiles(folderPath, 2);
-            
+            bool success = Utility.WriteSetings(writeOutList, settingsPath);
 
             if (success)
             {

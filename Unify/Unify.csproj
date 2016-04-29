@@ -8,8 +8,8 @@
     <ProjectGuid>{6DD2DB82-7E49-442C-8235-4005241B1D6C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnityOut</RootNamespace>
-    <AssemblyName>UnityOut</AssemblyName>
+    <RootNamespace>Unify</RootNamespace>
+    <AssemblyName>Unify</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -66,7 +66,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).rhp"
+    <PostBuildEvent>xcopy /Q /Y "$(TargetPath)" "C:\Users\ksobon\Google Drive\Work\UnityProjects\BarcelonaPavilion\Assets\Plugins\"
+Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).rhp"
 Erase "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
