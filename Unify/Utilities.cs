@@ -14,6 +14,7 @@ namespace Unify.Utilities
         public virtual string Guid { get; set; }
         public virtual string Name { get; set; }
         public virtual string UniqueName { get; set; }
+        public virtual bool Deleted { get; set; }
 
         // geometry
         public virtual string Layer { get; set; }
@@ -38,6 +39,19 @@ namespace Unify.Utilities
         public virtual string EnvironmentTexture { get; set; }
         public virtual string BumpTexture { get; set; }
         public virtual string Transparency { get; set; }
+
+        // meta data object
+        public virtual Dictionary<string, string> MetaData { get; set; }
+    }
+
+    public class UnifyMetaData : UnifyObject
+    {
+        public override Dictionary<string, string> MetaData { get; set; }
+
+        public UnifyMetaData(Dictionary<string, string> metaData)
+        {
+            this.MetaData = metaData;
+        }
     }
 
     public class UnifyLight : UnifyObject
@@ -45,6 +59,7 @@ namespace Unify.Utilities
         public override string ObjType { get; set; }
         public override string LightType { get; set; }
         public override string Guid { get; set; }
+        public override bool Deleted { get; set; }
         public override string Diffuse { get; set; }
         public override string Target { get; set; }
         public override string Intensity { get; set; }
@@ -194,23 +209,23 @@ namespace Unify.Utilities
             return sb.ToString();
         }
 
-        public static void ExportOBJ(List<Guid> objs, string folderPath)
+        public static void ExportOBJ(List<Guid> objs)
         {
             RhinoDoc.ActiveDoc.Objects.UnselectAll();
             RhinoDoc.ActiveDoc.Objects.Select(objs);
 
             string objOptions = GetOBJOptions();
             string fileName = "\\" + System.IO.Path.GetFileNameWithoutExtension(RhinoDoc.ActiveDoc.Name) + ".obj ";
-            string filePath = folderPath + fileName;
+            string filePath = "C:\\Temp" + fileName;
             string script = string.Concat("_-Export ", filePath, objOptions, " y=y", " _Enter _Enter");
             RhinoApp.RunScript(script, false);
             RhinoApp.RunScript("_-SelNone", true);
         }
 
-        public static bool WriteSetings(List<List<object>> objs, string settingsPath)
+        public static bool WriteSetings(List<List<object>> objs)
         {
             string json = JsonConvert.SerializeObject(objs, Formatting.Indented);
-            System.IO.File.WriteAllText(settingsPath, json);
+            System.IO.File.WriteAllText("C:\\Temp\\" + "UnifySettings.txt", json);
             return true;
         }
     }

@@ -39,22 +39,20 @@ namespace Unify
         }
 
         public string folderPath = "";
-        public string settingsPath = "";
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
-            // Get desired folder location
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            DialogResult result = fbd.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                folderPath = fbd.SelectedPath;
-                settingsPath = folderPath + "\\Settings.txt";
-            }
-            else
-            {
-                return Result.Cancel;
-            }
+            //// Get desired folder location
+            //FolderBrowserDialog fbd = new FolderBrowserDialog();
+            //DialogResult result = fbd.ShowDialog();
+            //if (result == DialogResult.OK)
+            //{
+            //    folderPath = fbd.SelectedPath;
+            //}
+            //else
+            //{
+            //    return Result.Cancel;
+            //}
 
             //ObjRef[] Ground; // The landscape
             //ObjRef[] Floors; // Create collider objects on specified floors
@@ -92,7 +90,12 @@ namespace Unify
             List<object> lightList = new List<object>();
             foreach (LightObject lo in allLights)
             {
-                lightList.Add(new UnifyLight(lo));
+                UnifyLight unifyObj = new UnifyLight(lo);
+                if (lo.IsDeleted)
+                {
+                    unifyObj.Deleted = true;
+                }
+                lightList.Add(unifyObj);
             }
             writeOutList.Add(lightList);
 
@@ -110,11 +113,21 @@ namespace Unify
             }
             writeOutList.Add(matList);
 
+            // write out file info for unity importer to process
+            List<object> allData = new List<object>();
+            Dictionary<string, string> metaDic = new Dictionary<string, string>();
+            metaDic.Add("FolderPath", folderPath);
+            metaDic.Add("OBJName", System.IO.Path.GetFileNameWithoutExtension(RhinoDoc.ActiveDoc.Name) + ".obj");
+            metaDic.Add("SettingsName", "UnifySettings.txt");
+            UnifyMetaData metaData = new UnifyMetaData(metaDic);
+            allData.Add(metaData);
+            writeOutList.Add(allData);
+
             // export to OBJ
-            Utility.ExportOBJ(objToExport, folderPath);
+            Utility.ExportOBJ(objToExport);
 
             // write the settings file
-            bool success = Utility.WriteSetings(writeOutList, settingsPath);
+            bool success = Utility.WriteSetings(writeOutList);
 
             if (success)
             {
