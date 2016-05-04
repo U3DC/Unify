@@ -5,6 +5,12 @@
 
 This is work in progress. 
 
+#Agenda:
+
+The idea is to create a streamlined pipeline from Rhino to Unity. So far and what have been posted on this github page we have a Rhino exporter plug-in that writes the OBJ file to C:/Temp location along with a UnifySettings.txt file that contains meta-data information about the Rhino file that OBJ doesn't. For example the TXT file will have information about Lights, Cameras, Materials etc so that it can be used to re-create these assets in Unity without a need to manually place and update them. 
+
+The Unity side has not yet, been posted as it is a severe WIP, but so far we were able to automate and wrap into Editor Scripts things like creating the Assets folder structure and importing the OBJ File. Next we also automated creation of prefabs for Light objects and override of Material Assets (not fully functioning, see Issues for more details). 
+
 #Features:
 
 1. Obj export of Rhino Geometry to custom location. 
