@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Rhino;
 using Rhino.Commands;
-using Rhino.Input;
 using Rhino.DocObjects;
 using Rhino.DocObjects.Tables;
-using System.Windows.Forms;
 using Unify.Utilities;
+using Unify.UnifyCommon;
 
 // Unify: Leland Jobson
 // Unify: Konrad K Sobon
@@ -71,7 +70,13 @@ namespace Unify
             List<object> geoList = new List<object>();
             foreach (RhinoObject ro in allObjects)
             {
-                geoList.Add(new UnifyGeometry(ro));
+                UnifyGeometry geo = new UnifyGeometry();
+
+                geo.ObjType = "GeometryObject";
+                geo.Layer = RhinoDoc.ActiveDoc.Layers[ro.Attributes.LayerIndex].FullPath.Replace(":", "_");
+                geo.Guid = ro.Id;
+
+                geoList.Add(geo);
                 objToExport.Add(ro.Id);
             }
             writeOutList.Add(geoList);
@@ -81,20 +86,46 @@ namespace Unify
             List<object> camList = new List<object>();
             foreach (ViewInfo vi in allCameras)
             {
-                camList.Add(new UnifyCamera(vi));
+                UnifyCamera cam = new UnifyCamera();
+
+                cam.ObjType = "ViewCamera";
+                cam.Guid = vi.Viewport.Id;
+                cam.Location = vi.Viewport.CameraLocation.ToString();
+
+                camList.Add(cam);
             }
             writeOutList.Add(camList);
 
             // get all lights
             LightTable allLights = Rhino.RhinoDoc.ActiveDoc.Lights;
             List<object> lightList = new List<object>();
-            foreach (LightObject lo in allLights)
+            foreach (LightObject light in allLights)
             {
-                UnifyLight unifyObj = new UnifyLight(lo);
-                if (lo.IsDeleted)
+                UnifyLight unifyObj = new UnifyLight();
+
+                unifyObj.ObjType = "LightObject";
+                unifyObj.LightType = light.LightGeometry.LightStyle.ToString();
+                unifyObj.Guid = light.Id;
+                unifyObj.Diffuse = Utility.ColorToString(light.LightGeometry.Diffuse);
+                unifyObj.UniqueName = light.LightGeometry.LightStyle.ToString() + "-" + light.Id.ToString();
+
+                // target target from location + direction
+                Rhino.Geometry.Transform xf = Rhino.Geometry.Transform.Translation(light.LightGeometry.Direction);
+                Rhino.Geometry.Point3d target = light.LightGeometry.Location;
+                target.Transform(xf);
+                unifyObj.Target = target.ToString();
+
+                unifyObj.Intensity = light.LightGeometry.Intensity;
+                unifyObj.Location = light.LightGeometry.Location.ToString();
+                unifyObj.Range = light.LightGeometry.Direction.Length;
+                unifyObj.SpotAngle = light.LightGeometry.SpotAngleRadians;
+                unifyObj.ShadowIntensity = light.LightGeometry.SpotLightShadowIntensity;
+
+                if (light.IsDeleted)
                 {
                     unifyObj.Deleted = true;
                 }
+
                 lightList.Add(unifyObj);
             }
             writeOutList.Add(lightList);
@@ -102,23 +133,37 @@ namespace Unify
             // get all materials by layers
             LayerTable allLayers = Rhino.RhinoDoc.ActiveDoc.Layers;
             List<object> matList = new List<object>();
-            foreach (Layer l in allLayers)
+            foreach (Layer layer in allLayers)
             {
-                int renderMatIndex = l.RenderMaterialIndex;
-                Material mat = Rhino.RhinoDoc.ActiveDoc.Materials[renderMatIndex];
-                UnifyMaterial uMat = new UnifyMaterial(mat);
-                string matUniqueName = l.FullPath.Replace("::", "__");
-                uMat.UniqueName = matUniqueName;
-                matList.Add(uMat);
+                int renderMatIndex = layer.RenderMaterialIndex;
+                Material rhinoMat = Rhino.RhinoDoc.ActiveDoc.Materials[renderMatIndex];
+                UnifyMaterial mat = new UnifyMaterial();
+
+                mat.ObjType = "MaterialObject";
+                mat.Guid = rhinoMat.Id;
+                mat.Name = rhinoMat.Name;
+                mat.Diffuse = Utility.ColorToString(rhinoMat.DiffuseColor);
+                mat.SpecularColor = Utility.ColorToString(rhinoMat.SpecularColor);
+                mat.EmissionColor = Utility.ColorToString(rhinoMat.EmissionColor);
+                mat.ReflectionColor = Utility.ColorToString(rhinoMat.ReflectionColor);
+                mat.Metallic = rhinoMat.Shine;
+
+                if (rhinoMat.GetBitmapTexture() != null) mat.DiffuseTexture = rhinoMat.GetBitmapTexture().FileName;
+                if (rhinoMat.GetTransparencyTexture() != null) mat.TransparencyTexture = rhinoMat.GetTransparencyTexture().FileName;
+                if (rhinoMat.GetEnvironmentTexture() != null) mat.EnvironmentTexture = rhinoMat.GetEnvironmentTexture().FileName;
+                if (rhinoMat.GetBumpTexture() != null) mat.BumpTexture = rhinoMat.GetBumpTexture().FileName;
+
+                mat.Transparency = rhinoMat.Transparency;
+                mat.UniqueName = layer.FullPath.Replace("::", "__");
+
+                matList.Add(mat);
             }
             writeOutList.Add(matList);
 
             // write out file info for unity importer to process
             List<object> allData = new List<object>();
             Dictionary<string, string> metaDic = new Dictionary<string, string>();
-            metaDic.Add("FolderPath", folderPath);
             metaDic.Add("OBJName", System.IO.Path.GetFileNameWithoutExtension(RhinoDoc.ActiveDoc.Name) + ".obj");
-            metaDic.Add("SettingsName", "UnifySettings.txt");
             UnifyMetaData metaData = new UnifyMetaData(metaDic);
             allData.Add(metaData);
             writeOutList.Add(allData);
@@ -127,7 +172,7 @@ namespace Unify
             Utility.ExportOBJ(objToExport);
 
             // write the settings file
-            bool success = Utility.WriteSetings(writeOutList);
+            bool success = Utility.ExportSettings(writeOutList);
 
             if (success)
             {
