@@ -24,6 +24,8 @@ namespace Unify.UnifyCommon
         public virtual double SpotAngle { get; set; }
         public virtual double ShadowIntensity { get; set; }
         public virtual string Location { get; set; }
+        public virtual double Width { get; set; } // rectangular and linear only
+        public virtual double Length { get; set; } // rectangular and linear only
 
         // materials
         public virtual string DiffuseTexture { get; set; }
@@ -63,6 +65,8 @@ namespace Unify.UnifyCommon
         public override double Range { get; set; }
         public override double SpotAngle { get; set; }
         public override double ShadowIntensity { get; set; }
+        public override double Width { get; set; }
+        public override double Length { get; set; }
 
         public UnifyLight()
         {

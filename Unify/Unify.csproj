@@ -49,8 +49,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnityOutCommand.cs" />
-    <Compile Include="UnityOut.cs" />
+    <Compile Include="UnifyCommand.cs" />
+    <Compile Include="Unify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
