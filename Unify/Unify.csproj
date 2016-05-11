@@ -49,13 +49,19 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnityOutCommand.cs" />
-    <Compile Include="UnityOut.cs" />
+    <Compile Include="UnifyCommand.cs" />
+    <Compile Include="Unify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UnifyCommon\UnifyCommon.csproj">
+      <Project>{856fb498-d37e-431e-90e6-b836eca439b1}</Project>
+      <Name>UnifyCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -66,8 +72,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Q /Y "$(TargetPath)" "C:\Users\ksobon\Google Drive\Work\UnityProjects\BarcelonaPavilion\Assets\Plugins\"
-Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).rhp"
+    <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).rhp"
 Erase "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
