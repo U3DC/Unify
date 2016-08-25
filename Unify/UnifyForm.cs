@@ -26,10 +26,6 @@ namespace Unify
                 // set selected value
                 cbProjects.SelectedIndex = 0;
                 this.SelectedProject = cbProjects.SelectedValue as string;
-
-                // activate other controls
-                gbCharacterLocation.Enabled = true;
-                gbProjectLocation.Enabled = true;
             }
 
             // populate Cameras Dropdown
@@ -37,6 +33,9 @@ namespace Unify
 
             // populate Checked Box List of Cameras
             PopulateCamerasCheckList(lbCameras, this.inputData.Cameras);
+
+            btnExport.DialogResult = DialogResult.OK;
+            btnCancel.DialogResult = DialogResult.Cancel;
         }
 
         private void PopulateDropdownDictionary<TKey, TValue>(ComboBox control, SortedDictionary<TKey, TValue> dict)
@@ -67,25 +66,15 @@ namespace Unify
 
         private void PopulateCamerasCheckList(CheckedListBox control, List<UnifyCamera> cameras)
         {
+            // leave ValueMember unspecified and by default it will be bound to UnifyCamera
             ((ListBox)control).DataSource = cameras;
             ((ListBox)control).DisplayMember = "Name";
-            ((ListBox)control).ValueMember = "IsPlayerJumpCamera";
-
-            for (int i = 0; i < control.Items.Count; i++)
-            {
-                UnifyCamera cam = (UnifyCamera)control.Items[i];
-                control.SetItemChecked(i, cam.IsPlayerJumpCamera);
-            }
         }
 
         private void cbProjects_SelectionChangeCommitted(object sender, System.EventArgs e)
         {
             string project = cbProjects.SelectedValue as string;
             this.SelectedProject = project;
-
-            // activate other controls
-            gbProjectLocation.Enabled = true;
-            gbCharacterLocation.Enabled = true;
         }
 
         private void btnNewProject_Click(object sender, System.EventArgs e)
@@ -131,7 +120,7 @@ namespace Unify
             DialogResult result = folderBrowserDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
-                this.inputData.unityProjectPath = folderBrowserDialog1.SelectedPath;
+                this.inputData.UnityProjectPath = folderBrowserDialog1.SelectedPath;
                 tbFolderPath.Text = folderBrowserDialog1.SelectedPath;
             }
         }
@@ -139,16 +128,37 @@ namespace Unify
         private void btnExport_Click(object sender, System.EventArgs e)
         {
             // deploy assets to specified Unity location
-            if (this.inputData.unityProjectPath != null)
+            if (this.inputData.UnityProjectPath != null)
             {
-                Utility.CopyDir(this.inputData.PluginFolderPath + @"\Assets", this.inputData.unityProjectPath);
+                Utility.CopyDir(this.inputData.PluginFolderPath + @"\Assets", this.inputData.UnityProjectPath);
             }
 
+            // set origin camera property
+            // jump cameras are data bound so property should be set already for those
+            if (cbCameras.SelectedValue != null)
+            {
+                UnifyCamera camera = cbCameras.SelectedValue as UnifyCamera;
+                camera.IsPlayerOriginCamera = true;
+            }
+
+            if (lbCameras.Items.Count > 0)
+            {
+                foreach (var item in lbCameras.CheckedItems)
+                {
+                    UnifyCamera cam = item as UnifyCamera;
+                    cam.IsPlayerJumpCamera = true;
+                }
+            }
+
+            this.inputData.ProcessExports();
+
+            // close form
             this.Close();
         }
 
         private void btnCancel_Click(object sender, System.EventArgs e)
         {
+            // close form
             this.Close();
         }
     }

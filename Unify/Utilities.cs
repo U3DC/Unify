@@ -59,7 +59,7 @@ namespace Unify.Utilities
         ///     Returns OBJ Export options string for use with Command Line.
         /// </summary>
         /// <returns></returns>
-        private static string GetOBJOptions()
+        public static string GetOBJOptions()
         {
             StringBuilder sb = new StringBuilder();
             string[] objOptions = new string[]
@@ -98,35 +98,6 @@ namespace Unify.Utilities
                 sb.Append(objOptions[i]);
             }
             return sb.ToString();
-        }
-
-        /// <summary>
-        ///     Runs Command Line script in Rhino that exports OBJ file.
-        /// </summary>
-        /// <param name="objs"></param>
-        public static void ExportOBJ(List<Guid> objs)
-        {
-            RhinoDoc.ActiveDoc.Objects.UnselectAll();
-            RhinoDoc.ActiveDoc.Objects.Select(objs);
-
-            string objOptions = GetOBJOptions();
-            string fileName = "\\" + System.IO.Path.GetFileNameWithoutExtension(RhinoDoc.ActiveDoc.Name) + ".obj ";
-            string filePath = "C:\\Temp" + fileName;
-            string script = string.Concat("_-Export ", filePath, objOptions, " y=y", " _Enter _Enter");
-            RhinoApp.RunScript(script, false);
-            RhinoApp.RunScript("_-SelNone", true);
-        }
-
-        /// <summary>
-        ///     Serializes a list of Unify objects into JSON.
-        /// </summary>
-        /// <param name="objs"></param>
-        /// <returns></returns>
-        public static bool ExportSettings(List<List<object>> objs)
-        {
-            string json = JsonConvert.SerializeObject(objs, Formatting.Indented);
-            System.IO.File.WriteAllText("C:\\Temp\\" + "UnifySettings.txt", json);
-            return true;
         }
     }
 }

@@ -115,6 +115,7 @@ namespace Unify.UnifyCommon
         public override string Location { get; set; }
         public override string Name { get; set; }
         public bool IsPlayerJumpCamera { get; set; }
+        public bool IsPlayerOriginCamera { get; set; }
 
         public UnifyCamera()
         {

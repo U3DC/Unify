@@ -62,7 +62,6 @@
             // gbCharacterLocation
             // 
             this.gbCharacterLocation.Controls.Add(this.panel1);
-            this.gbCharacterLocation.Enabled = false;
             this.gbCharacterLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbCharacterLocation.ForeColor = System.Drawing.SystemColors.WindowText;
             this.gbCharacterLocation.Location = new System.Drawing.Point(12, 149);
@@ -189,7 +188,6 @@
             this.gbProjectLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbProjectLocation.Controls.Add(this.panel3);
-            this.gbProjectLocation.Enabled = false;
             this.gbProjectLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbProjectLocation.ForeColor = System.Drawing.SystemColors.WindowText;
             this.gbProjectLocation.Location = new System.Drawing.Point(12, 78);
