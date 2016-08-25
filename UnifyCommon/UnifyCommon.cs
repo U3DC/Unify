@@ -113,6 +113,8 @@ namespace Unify.UnifyCommon
         public override string ObjType { get; set; }
         public override Guid Guid { get; set; }
         public override string Location { get; set; }
+        public override string Name { get; set; }
+        public bool IsPlayerJumpCamera { get; set; }
 
         public UnifyCamera()
         {
