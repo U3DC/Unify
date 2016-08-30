@@ -36,6 +36,12 @@ namespace Unify
 
             btnExport.DialogResult = DialogResult.OK;
             btnCancel.DialogResult = DialogResult.Cancel;
+
+            // populate MeshCollider Layers
+            lbAllLayers.Items.AddRange(inputData.Layers.ToArray());
+            lbAllLayers.DisplayMember = "Name";
+            lbSelectedLayers.DisplayMember = "Name";
+            lbAllLayers.Sorted = true;
         }
 
         private void PopulateDropdownDictionary<TKey, TValue>(ComboBox control, SortedDictionary<TKey, TValue> dict)
@@ -150,6 +156,18 @@ namespace Unify
                 }
             }
 
+            // set MeshCollider property for Layers
+            foreach (object o in lbSelectedLayers.Items)
+            {
+                UnifyLayer layer = o as UnifyLayer;
+                layer.MeshCollider = true;
+            }
+            foreach (object o in lbAllLayers.Items)
+            {
+                UnifyLayer layer = o as UnifyLayer;
+                layer.MeshCollider = false;
+            }
+
             this.inputData.ProcessExports();
 
             // close form
@@ -160,6 +178,29 @@ namespace Unify
         {
             // close form
             this.Close();
+        }
+
+        private void MoveListBoxItems(ListBox source, ListBox destination)
+        {
+            ListBox.SelectedObjectCollection sourceItems = source.SelectedItems;
+            foreach (var item in sourceItems)
+            {
+                destination.Items.Add(item);
+            }
+            while (source.SelectedItems.Count > 0)
+            {
+                source.Items.Remove(source.SelectedItems[0]);
+            }
+        }
+
+        private void btnAddLayer_Click(object sender, System.EventArgs e)
+        {
+            MoveListBoxItems(lbAllLayers, lbSelectedLayers);
+        }
+
+        private void btnRemoveLayer_Click(object sender, System.EventArgs e)
+        {
+            MoveListBoxItems(lbSelectedLayers, lbAllLayers);
         }
     }
 }

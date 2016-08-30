@@ -27,6 +27,7 @@ namespace Unify
         public List<UnifyLight> Lights;
         public List<UnifyMaterial> Materials;
         public List<UnifyMetaData> MetaData;
+        public List<UnifyLayer> Layers;
 
         public InputData(RhinoDoc _doc)
         {
@@ -38,6 +39,7 @@ namespace Unify
             GetCameras();
             GetMaterials();
             GetMetaData();
+            GetLayers();
         }
 
         public void ProcessExports()
@@ -53,14 +55,20 @@ namespace Unify
             RhinoApp.RunScript("_-SelNone", true);
 
             // run Unify settings export
-            List<List<object>> writeOutList = new List<List<object>>();
-            writeOutList.Add(this.Geometry.Cast<object>().ToList());
-            writeOutList.Add(this.Cameras.Cast<object>().ToList());
-            writeOutList.Add(this.Lights.Cast<object>().ToList());
-            writeOutList.Add(this.Materials.Cast<object>().ToList());
-            writeOutList.Add(this.MetaData.Cast<object>().ToList());
-
-            string json = JsonConvert.SerializeObject(writeOutList, Formatting.Indented);
+            Dictionary<string, List<object>> exportObjects = new Dictionary<string, List<object>>()
+            {
+                { "Geometry", this.Geometry.Cast<object>().ToList() },
+                { "Cameras", this.Cameras.Cast<object>().ToList() },
+                { "Lights", this.Lights.Cast<object>().ToList() },
+                { "Materials", this.Materials.Cast<object>().ToList() },
+                { "MetaData", this.MetaData.Cast<object>().ToList() },
+                { "Layers", this.Layers.Cast<object>().ToList() }
+            };
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+            string json = JsonConvert.SerializeObject(exportObjects, Formatting.Indented, settings);
             File.WriteAllText(this.UnityProjectPath + @"\Resources\" + "UnifySettings.txt", json);
         }
 
@@ -93,6 +101,22 @@ namespace Unify
             allData.Add(metaData);
 
             this.MetaData = allData;
+        }
+
+        private void GetLayers()
+        {
+            List<UnifyLayer> unifyLayers = new List<UnifyLayer>();
+            foreach (Layer l in doc.Layers)
+            {
+                UnifyLayer ul = new UnifyLayer();
+                ul.ObjType = "Layer";
+                ul.Guid = l.Id;
+                ul.Name = l.FullPath.Replace(":", "_");
+                ul.MeshCollider = false;
+                unifyLayers.Add(ul);
+            }
+
+            this.Layers = unifyLayers;
         }
 
         private void GetMaterials()
@@ -202,6 +226,7 @@ namespace Unify
                 geo.ObjType = "GeometryObject";
                 geo.Layer = doc.Layers[ro.Attributes.LayerIndex].FullPath.Replace(":", "_");
                 geo.Guid = ro.Id;
+                geo.MeshCollider = false;
 
                 geoList.Add(geo);
                 objExport.Add(ro.Id);
@@ -222,6 +247,7 @@ namespace Unify
                 cam.ObjType = "ViewCamera";
                 cam.Guid = vi.Viewport.Id;
                 cam.Location = vi.Viewport.CameraLocation.ToString();
+                cam.Target = vi.Viewport.CameraDirection.ToString();
                 cam.Name = vi.Name;
 
                 camList.Add(cam);

@@ -31,16 +31,16 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UnifyForm));
             this.gbCharacterLocation = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lbCameras = new System.Windows.Forms.CheckedListBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.cbCameras = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.lbCameras = new System.Windows.Forms.CheckedListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.cbProjects = new System.Windows.Forms.ComboBox();
-            this.btnNewProject = new System.Windows.Forms.Button();
-            this.tbProjectName = new System.Windows.Forms.TextBox();
             this.btnDeleteProject = new System.Windows.Forms.Button();
+            this.tbProjectName = new System.Windows.Forms.TextBox();
+            this.btnNewProject = new System.Windows.Forms.Button();
+            this.cbProjects = new System.Windows.Forms.ComboBox();
             this.gbProjectLocation = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tbFolderPath = new System.Windows.Forms.TextBox();
@@ -50,6 +50,12 @@
             this.btnExport = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnHelp = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.btnRemoveLayer = new System.Windows.Forms.Button();
+            this.btnAddLayer = new System.Windows.Forms.Button();
+            this.lbSelectedLayers = new System.Windows.Forms.ListBox();
+            this.lbAllLayers = new System.Windows.Forms.ListBox();
             this.gbCharacterLocation.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -57,6 +63,8 @@
             this.gbProjectLocation.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox5.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbCharacterLocation
@@ -84,10 +92,28 @@
             this.panel1.Size = new System.Drawing.Size(508, 175);
             this.panel1.TabIndex = 1;
             // 
+            // lbCameras
+            // 
+            this.lbCameras.CheckOnClick = true;
+            this.lbCameras.FormattingEnabled = true;
+            this.lbCameras.Location = new System.Drawing.Point(305, 44);
+            this.lbCameras.Name = "lbCameras";
+            this.lbCameras.Size = new System.Drawing.Size(200, 124);
+            this.lbCameras.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(116, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Player Jump Locations:";
+            // 
             // cbCameras
             // 
             this.cbCameras.FormattingEnabled = true;
-            this.cbCameras.Location = new System.Drawing.Point(212, 12);
+            this.cbCameras.Location = new System.Drawing.Point(305, 12);
             this.cbCameras.Name = "cbCameras";
             this.cbCameras.Size = new System.Drawing.Size(200, 21);
             this.cbCameras.TabIndex = 2;
@@ -101,24 +127,6 @@
             this.label1.Size = new System.Drawing.Size(108, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Player Start Location:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 44);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(116, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Player Jump Locations:";
-            // 
-            // lbCameras
-            // 
-            this.lbCameras.CheckOnClick = true;
-            this.lbCameras.FormattingEnabled = true;
-            this.lbCameras.Location = new System.Drawing.Point(212, 44);
-            this.lbCameras.Name = "lbCameras";
-            this.lbCameras.Size = new System.Drawing.Size(200, 124);
-            this.lbCameras.TabIndex = 5;
             // 
             // groupBox2
             // 
@@ -145,15 +153,23 @@
             this.panel2.Size = new System.Drawing.Size(508, 35);
             this.panel2.TabIndex = 1;
             // 
-            // cbProjects
+            // btnDeleteProject
             // 
-            this.cbProjects.FormattingEnabled = true;
-            this.cbProjects.Location = new System.Drawing.Point(6, 6);
-            this.cbProjects.Name = "cbProjects";
-            this.cbProjects.Size = new System.Drawing.Size(200, 21);
-            this.cbProjects.TabIndex = 6;
-            this.cbProjects.Text = "Projects";
-            this.cbProjects.SelectionChangeCommitted += new System.EventHandler(this.cbProjects_SelectionChangeCommitted);
+            this.btnDeleteProject.Location = new System.Drawing.Point(468, 4);
+            this.btnDeleteProject.Name = "btnDeleteProject";
+            this.btnDeleteProject.Size = new System.Drawing.Size(37, 23);
+            this.btnDeleteProject.TabIndex = 8;
+            this.btnDeleteProject.Text = "-";
+            this.btnDeleteProject.UseVisualStyleBackColor = true;
+            this.btnDeleteProject.Click += new System.EventHandler(this.btnDeleteProject_Click);
+            // 
+            // tbProjectName
+            // 
+            this.tbProjectName.Location = new System.Drawing.Point(212, 6);
+            this.tbProjectName.Name = "tbProjectName";
+            this.tbProjectName.Size = new System.Drawing.Size(200, 20);
+            this.tbProjectName.TabIndex = 7;
+            this.tbProjectName.Text = "Project Name";
             // 
             // btnNewProject
             // 
@@ -165,23 +181,15 @@
             this.btnNewProject.UseVisualStyleBackColor = true;
             this.btnNewProject.Click += new System.EventHandler(this.btnNewProject_Click);
             // 
-            // tbProjectName
+            // cbProjects
             // 
-            this.tbProjectName.Location = new System.Drawing.Point(212, 6);
-            this.tbProjectName.Name = "tbProjectName";
-            this.tbProjectName.Size = new System.Drawing.Size(200, 20);
-            this.tbProjectName.TabIndex = 7;
-            this.tbProjectName.Text = "Project Name";
-            // 
-            // btnDeleteProject
-            // 
-            this.btnDeleteProject.Location = new System.Drawing.Point(461, 4);
-            this.btnDeleteProject.Name = "btnDeleteProject";
-            this.btnDeleteProject.Size = new System.Drawing.Size(37, 23);
-            this.btnDeleteProject.TabIndex = 8;
-            this.btnDeleteProject.Text = "-";
-            this.btnDeleteProject.UseVisualStyleBackColor = true;
-            this.btnDeleteProject.Click += new System.EventHandler(this.btnDeleteProject_Click);
+            this.cbProjects.FormattingEnabled = true;
+            this.cbProjects.Location = new System.Drawing.Point(6, 6);
+            this.cbProjects.Name = "cbProjects";
+            this.cbProjects.Size = new System.Drawing.Size(200, 21);
+            this.cbProjects.TabIndex = 6;
+            this.cbProjects.Text = "Projects";
+            this.cbProjects.SelectionChangeCommitted += new System.EventHandler(this.cbProjects_SelectionChangeCommitted);
             // 
             // gbProjectLocation
             // 
@@ -215,7 +223,7 @@
             // 
             this.tbFolderPath.Location = new System.Drawing.Point(45, 12);
             this.tbFolderPath.Name = "tbFolderPath";
-            this.tbFolderPath.Size = new System.Drawing.Size(367, 20);
+            this.tbFolderPath.Size = new System.Drawing.Size(460, 20);
             this.tbFolderPath.TabIndex = 21;
             this.tbFolderPath.Text = "FolderPath";
             // 
@@ -232,7 +240,7 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(457, 514);
+            this.btnCancel.Location = new System.Drawing.Point(457, 637);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 36);
             this.btnCancel.TabIndex = 49;
@@ -243,7 +251,7 @@
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(376, 514);
+            this.btnExport.Location = new System.Drawing.Point(376, 637);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 36);
             this.btnExport.TabIndex = 48;
@@ -257,7 +265,7 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 450);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 573);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(231, 100);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -267,18 +275,96 @@
             // btnHelp
             // 
             this.btnHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHelp.Location = new System.Drawing.Point(334, 514);
+            this.btnHelp.Location = new System.Drawing.Point(334, 637);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(36, 36);
             this.btnHelp.TabIndex = 50;
             this.btnHelp.Text = "?";
             this.btnHelp.UseVisualStyleBackColor = true;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.panel5);
+            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox5.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.groupBox5.Location = new System.Drawing.Point(12, 356);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(520, 198);
+            this.groupBox5.TabIndex = 51;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Floor Colliders:";
+            // 
+            // panel5
+            // 
+            this.panel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel5.Controls.Add(this.btnRemoveLayer);
+            this.panel5.Controls.Add(this.btnAddLayer);
+            this.panel5.Controls.Add(this.lbSelectedLayers);
+            this.panel5.Controls.Add(this.lbAllLayers);
+            this.panel5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panel5.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.panel5.Location = new System.Drawing.Point(6, 18);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(508, 174);
+            this.panel5.TabIndex = 32;
+            // 
+            // btnRemoveLayer
+            // 
+            this.btnRemoveLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemoveLayer.Location = new System.Drawing.Point(211, 91);
+            this.btnRemoveLayer.Name = "btnRemoveLayer";
+            this.btnRemoveLayer.Size = new System.Drawing.Size(85, 23);
+            this.btnRemoveLayer.TabIndex = 3;
+            this.btnRemoveLayer.Text = "<";
+            this.btnRemoveLayer.UseVisualStyleBackColor = true;
+            this.btnRemoveLayer.Click += new System.EventHandler(this.btnRemoveLayer_Click);
+            // 
+            // btnAddLayer
+            // 
+            this.btnAddLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddLayer.Location = new System.Drawing.Point(211, 62);
+            this.btnAddLayer.Name = "btnAddLayer";
+            this.btnAddLayer.Size = new System.Drawing.Size(85, 23);
+            this.btnAddLayer.TabIndex = 2;
+            this.btnAddLayer.Text = ">";
+            this.btnAddLayer.UseVisualStyleBackColor = true;
+            this.btnAddLayer.Click += new System.EventHandler(this.btnAddLayer_Click);
+            // 
+            // lbSelectedLayers
+            // 
+            this.lbSelectedLayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbSelectedLayers.FormattingEnabled = true;
+            this.lbSelectedLayers.Location = new System.Drawing.Point(305, 3);
+            this.lbSelectedLayers.Name = "lbSelectedLayers";
+            this.lbSelectedLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbSelectedLayers.Size = new System.Drawing.Size(200, 160);
+            this.lbSelectedLayers.TabIndex = 1;
+            // 
+            // lbAllLayers
+            // 
+            this.lbAllLayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbAllLayers.FormattingEnabled = true;
+            this.lbAllLayers.Location = new System.Drawing.Point(3, 3);
+            this.lbAllLayers.Name = "lbAllLayers";
+            this.lbAllLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbAllLayers.Size = new System.Drawing.Size(200, 160);
+            this.lbAllLayers.TabIndex = 0;
+            // 
             // UnifyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 562);
+            this.ClientSize = new System.Drawing.Size(544, 685);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnExport);
@@ -288,9 +374,7 @@
             this.Controls.Add(this.gbCharacterLocation);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(560, 600);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(560, 600);
             this.Name = "UnifyForm";
             this.Text = "Unify";
             this.gbCharacterLocation.ResumeLayout(false);
@@ -303,6 +387,8 @@
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -330,5 +416,11 @@
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnHelp;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Button btnRemoveLayer;
+        private System.Windows.Forms.Button btnAddLayer;
+        private System.Windows.Forms.ListBox lbSelectedLayers;
+        private System.Windows.Forms.ListBox lbAllLayers;
     }
 }
