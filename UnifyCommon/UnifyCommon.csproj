@@ -39,7 +39,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Q /Y "$(TargetPath)" "C:\Users\ksobon\Google Drive\Work\UnityProjects\BarcelonaPavilion\Assets\Plugins\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Q/Y "$(TargetPath)" "C:\Program Files\Rhinoceros 5 (64-bit)\Plug-ins\Unify"
+xcopy /Q/Y "$(TargetPath)" "E:\Google Drive\Work\UnityProjects\TestProject2\Assets\Plugins"
+xcopy /Q/Y "$(TargetPath)" "C:\Program Files\Rhinoceros 5 (64-bit)\Plug-ins\Unify\Assets\Plugins"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
