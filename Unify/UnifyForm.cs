@@ -43,6 +43,10 @@ namespace Unify
             lbAllLayers.DisplayMember = "Name";
             lbSelectedLayers.DisplayMember = "Name";
             lbAllLayers.Sorted = true;
+
+            // refresh form
+            this.Refresh();
+            LoadPresets();
         }
 
         private void LoadPresets()
@@ -64,10 +68,37 @@ namespace Unify
                 this.inputData.UnityProjectPath = presets.AssetsLocation;
 
                 // set selected origin camera
-                int index = cbCameras.FindString(presets.OriginCamera);
+                int index = cbCameras.FindStringExact(presets.OriginCamera);
                 if (index != -1)
                 {
                     cbCameras.SelectedIndex = index;
+                }
+
+                // set jump cameras
+                foreach (KeyValuePair<string, bool> item in presets.JumpCameras)
+                {
+                    int index1 = lbCameras.FindStringExact(item.Key);
+                    if (index1 != -1)
+                    {
+                        lbCameras.SetItemCheckState(index1, item.Value == true ? CheckState.Checked : CheckState.Unchecked);
+                    }
+                }
+
+                // set nesh colliders
+                foreach (KeyValuePair<string, bool> item in presets.MeshColliders)
+                {
+                    int index2 = lbAllLayers.FindStringExact(item.Key);
+                    int index3 = lbSelectedLayers.FindStringExact(item.Key);
+                    if (index2 != -1 && item.Value == true)
+                    {
+                        lbSelectedLayers.Items.Add(lbAllLayers.Items[index2]);
+                        lbAllLayers.Items.RemoveAt(index2);
+                    }
+                    if (index3 != -1 && item.Value == false)
+                    {
+                        lbAllLayers.Items.Add(lbSelectedLayers.Items[index3]);
+                        lbSelectedLayers.Items.RemoveAt(index3);
+                    }
                 }
             }
         }
@@ -75,8 +106,44 @@ namespace Unify
         private void SavePresets()
         {
             FormPresets presets = new FormPresets();
+
+            // save assets location
             presets.AssetsLocation = tbFolderPath.Text;
+
+            // save origin camera selection
             presets.OriginCamera = ((UnifyCamera)cbCameras.SelectedValue).Name;
+
+            // save jump cameras
+            Dictionary<string, bool> jumpCameras = new Dictionary<string, bool>();
+            for (int i = 0; i < lbCameras.Items.Count; i++)
+            {
+                UnifyCamera camera = lbCameras.Items[i] as UnifyCamera;
+                if (lbCameras.GetItemChecked(i))
+                {
+                    jumpCameras.Add(camera.Name, true);
+                }
+                else
+                {
+                    jumpCameras.Add(camera.Name, false);
+                }
+
+            }
+            presets.JumpCameras = jumpCameras;
+
+            // save mesh colliders
+            Dictionary<string, bool> meshColliders = new Dictionary<string, bool>();
+            for (int i = 0; i < lbAllLayers.Items.Count; i++)
+            {
+                UnifyLayer layer = lbAllLayers.Items[i] as UnifyLayer;
+                meshColliders.Add(layer.Name, false);
+            }
+            for (int i = 0; i < lbSelectedLayers.Items.Count; i++)
+            {
+                UnifyLayer layer = lbSelectedLayers.Items[i] as UnifyLayer;
+                meshColliders.Add(layer.Name, true);
+            }
+            presets.MeshColliders = meshColliders;
+
 
             // write to project file
             string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
@@ -154,10 +221,21 @@ namespace Unify
                 // update input data
                 this.inputData.Projects.Remove(Path.GetFileNameWithoutExtension(cbProjects.SelectedValue as string));
 
-                // update projects dropdown
-                PopulateDropdownDictionary(cbProjects, this.inputData.Projects);
-                cbProjects.SelectedIndex = 0;
-                this.SelectedProject = cbProjects.SelectedValue as string;
+                if (this.inputData.Projects.Count > 0)
+                {
+                    // update projects dropdown
+                    PopulateDropdownDictionary(cbProjects, this.inputData.Projects);
+                    cbProjects.SelectedIndex = 0;
+                    this.SelectedProject = cbProjects.SelectedValue as string;
+                }
+                else
+                {
+                    cbProjects.DataSource = null;
+                    cbProjects.Text = "Projects";
+                }
+
+                // reload presets
+                LoadPresets();
             }
         }
 
@@ -308,6 +386,11 @@ namespace Unify
         private void cbCameras_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             UnifyCamera selected = cbCameras.SelectedValue as UnifyCamera;
+        }
+
+        private void btnPresetRefresh_Click(object sender, System.EventArgs e)
+        {
+            LoadPresets();
         }
     }
 }

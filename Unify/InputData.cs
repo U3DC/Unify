@@ -16,6 +16,8 @@ namespace Unify
     {
         public string AssetsLocation { get; set; }
         public string OriginCamera { get; set; }
+        public Dictionary<string, bool> JumpCameras { get; set; }
+        public Dictionary<string, bool> MeshColliders { get; set; }
 
         public FormPresets()
         {
