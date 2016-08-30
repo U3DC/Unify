@@ -51,8 +51,6 @@ namespace Unify
 
         private void LoadPresets()
         {
-            // load presets for this project
-            // load settings from assets
             FormPresets presets = null;
             try
             {
@@ -75,12 +73,29 @@ namespace Unify
                 }
 
                 // set jump cameras
-                foreach (KeyValuePair<string, bool> item in presets.JumpCameras)
+                // modify source list order
+                for (int i = 0; i < lbCameras.Items.Count; i++)
+                {
+                    UnifyCamera cam = lbCameras.Items[i] as UnifyCamera;
+                    if (presets.JumpCameras.ContainsKey(cam.Name))
+                    {
+                        this.inputData.Cameras.Remove(cam);
+                        this.inputData.Cameras.Insert(presets.JumpCameras[cam.Name].Index, cam);
+                    }
+                }
+
+                // re-set the list box bounding to re-set the order.
+                ((ListBox)lbCameras).DataSource = null;
+                ((ListBox)lbCameras).DataSource = this.inputData.Cameras;
+                ((ListBox)lbCameras).DisplayMember = "Name";
+
+                // set check boxes
+                foreach (KeyValuePair<string, ValuePair> item in presets.JumpCameras)
                 {
                     int index1 = lbCameras.FindStringExact(item.Key);
                     if (index1 != -1)
                     {
-                        lbCameras.SetItemCheckState(index1, item.Value == true ? CheckState.Checked : CheckState.Unchecked);
+                        lbCameras.SetItemCheckState(index1, item.Value.Checked == true ? CheckState.Checked : CheckState.Unchecked);
                     }
                 }
 
@@ -114,17 +129,17 @@ namespace Unify
             presets.OriginCamera = ((UnifyCamera)cbCameras.SelectedValue).Name;
 
             // save jump cameras
-            Dictionary<string, bool> jumpCameras = new Dictionary<string, bool>();
+            Dictionary<string, ValuePair> jumpCameras = new Dictionary<string, ValuePair>();
             for (int i = 0; i < lbCameras.Items.Count; i++)
             {
                 UnifyCamera camera = lbCameras.Items[i] as UnifyCamera;
                 if (lbCameras.GetItemChecked(i))
                 {
-                    jumpCameras.Add(camera.Name, true);
+                    jumpCameras.Add(camera.Name, new ValuePair(true, i));
                 }
                 else
                 {
-                    jumpCameras.Add(camera.Name, false);
+                    jumpCameras.Add(camera.Name, new ValuePair(false, i));
                 }
 
             }
@@ -195,24 +210,27 @@ namespace Unify
         {
             string projectName = Path.Combine(inputData.ProjectsFolderPath, tbProjectName.Text + ".txt");
 
-            // create new project txt file
-            File.Create(projectName).Dispose();
+            if (!this.inputData.Projects.ContainsKey(Path.GetFileNameWithoutExtension(projectName)))
+            {
+                // create new project txt file
+                File.Create(projectName).Dispose();
 
-            // set current project to new file and update input data
-            this.SelectedProject = projectName;
-            this.inputData.Projects.Add(Path.GetFileNameWithoutExtension(projectName), projectName);
+                // set current project to new file and update input data
+                this.SelectedProject = projectName;
+                this.inputData.Projects.Add(Path.GetFileNameWithoutExtension(projectName), projectName);
 
-            // refresh projects dropdown
-            PopulateDropdownDictionary(cbProjects, this.inputData.Projects);
-            cbProjects.Text = Path.GetFileNameWithoutExtension(projectName);
+                // refresh projects dropdown
+                PopulateDropdownDictionary(cbProjects, this.inputData.Projects);
+                cbProjects.Text = Path.GetFileNameWithoutExtension(projectName);
 
-            // reset text in Text Box
-            tbProjectName.Text = "Project Name";
+                // reset text in Text Box
+                tbProjectName.Text = "Project Name";
+            }
         }
 
         private void btnDeleteProject_Click(object sender, System.EventArgs e)
         {
-            if (this.SelectedProject != null)
+            if (cbProjects.SelectedValue != null)
             {
                 // delete selected project file
                 string selectedPath = cbProjects.SelectedValue as string;

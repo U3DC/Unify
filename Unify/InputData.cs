@@ -12,11 +12,23 @@ using Unify.Utilities;
 
 namespace Unify
 {
+    public struct ValuePair
+    {
+        public bool Checked;
+        public int Index;
+
+        public ValuePair(bool x, int y)
+        {
+            Checked = x;
+            Index = y;
+        }
+    }
+
     public class FormPresets
     {
         public string AssetsLocation { get; set; }
         public string OriginCamera { get; set; }
-        public Dictionary<string, bool> JumpCameras { get; set; }
+        public Dictionary<string, ValuePair> JumpCameras { get; set; }
         public Dictionary<string, bool> MeshColliders { get; set; }
 
         public FormPresets()

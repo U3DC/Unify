@@ -99,6 +99,7 @@
             // 
             // lbCameras
             // 
+            this.lbCameras.CheckOnClick = true;
             this.lbCameras.FormattingEnabled = true;
             this.lbCameras.Location = new System.Drawing.Point(305, 44);
             this.lbCameras.Name = "lbCameras";
