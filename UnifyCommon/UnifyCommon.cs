@@ -72,7 +72,6 @@ namespace Unify.UnifyCommon
     public class UnifyGeometry : UnifyObject
     {
         public string Layer { get; set; }
-        public bool MeshCollider { get; set; }
 
         public UnifyGeometry()
         {
@@ -82,8 +81,8 @@ namespace Unify.UnifyCommon
 
     public class UnifyCamera : UnifyObject
     {
-        public string Location { get; set; }
-        public string Target { get; set; }
+        public string CameraLocation { get; set; }
+        public string CameraTarget { get; set; }
 
         public bool IsPlayerJumpCamera { get; set; }
         public bool IsPlayerOriginCamera { get; set; }

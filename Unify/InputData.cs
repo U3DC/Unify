@@ -12,6 +12,16 @@ using Unify.Utilities;
 
 namespace Unify
 {
+    public class FormPresets
+    {
+        public string AssetsLocation { get; set; }
+        public string OriginCamera { get; set; }
+
+        public FormPresets()
+        {
+
+        }
+    }
     public class InputData
     {
         public RhinoDoc doc;
@@ -226,7 +236,6 @@ namespace Unify
                 geo.ObjType = "GeometryObject";
                 geo.Layer = doc.Layers[ro.Attributes.LayerIndex].FullPath.Replace(":", "_");
                 geo.Guid = ro.Id;
-                geo.MeshCollider = false;
 
                 geoList.Add(geo);
                 objExport.Add(ro.Id);
@@ -246,8 +255,8 @@ namespace Unify
                 UnifyCamera cam = new UnifyCamera();
                 cam.ObjType = "ViewCamera";
                 cam.Guid = vi.Viewport.Id;
-                cam.Location = vi.Viewport.CameraLocation.ToString();
-                cam.Target = vi.Viewport.CameraDirection.ToString();
+                cam.CameraLocation = vi.Viewport.CameraLocation.ToString();
+                cam.CameraTarget = vi.Viewport.FrustumCenterPoint(2).ToString();
                 cam.Name = vi.Name;
 
                 camList.Add(cam);

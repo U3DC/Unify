@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
@@ -44,6 +45,44 @@ namespace Unify
             lbAllLayers.Sorted = true;
         }
 
+        private void LoadPresets()
+        {
+            // load presets for this project
+            // load settings from assets
+            FormPresets presets = null;
+            try
+            {
+                string json = File.ReadAllText(this.SelectedProject);
+                presets = JsonConvert.DeserializeObject<FormPresets>(json);
+            }
+            catch { }
+
+            if (presets != null)
+            {
+                // set project path and input data
+                tbFolderPath.Text = presets.AssetsLocation;
+                this.inputData.UnityProjectPath = presets.AssetsLocation;
+
+                // set selected origin camera
+                int index = cbCameras.FindString(presets.OriginCamera);
+                if (index != -1)
+                {
+                    cbCameras.SelectedIndex = index;
+                }
+            }
+        }
+
+        private void SavePresets()
+        {
+            FormPresets presets = new FormPresets();
+            presets.AssetsLocation = tbFolderPath.Text;
+            presets.OriginCamera = ((UnifyCamera)cbCameras.SelectedValue).Name;
+
+            // write to project file
+            string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
+            File.WriteAllText(this.SelectedProject, json);
+        }
+
         private void PopulateDropdownDictionary<TKey, TValue>(ComboBox control, SortedDictionary<TKey, TValue> dict)
         {
             if (dict != null
@@ -81,6 +120,8 @@ namespace Unify
         {
             string project = cbProjects.SelectedValue as string;
             this.SelectedProject = project;
+
+            LoadPresets();
         }
 
         private void btnNewProject_Click(object sender, System.EventArgs e)
@@ -170,6 +211,9 @@ namespace Unify
 
             this.inputData.ProcessExports();
 
+            // save form presets
+            SavePresets();
+
             // close form
             this.Close();
         }
@@ -201,6 +245,69 @@ namespace Unify
         private void btnRemoveLayer_Click(object sender, System.EventArgs e)
         {
             MoveListBoxItems(lbSelectedLayers, lbAllLayers);
+        }
+
+        private void lbSelectedLayers_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = lbSelectedLayers.IndexFromPoint(e.Location);
+            if (index != ListBox.NoMatches)
+            {
+                var item = lbSelectedLayers.Items[index];
+                lbAllLayers.Items.Add(item);
+                lbSelectedLayers.Items.Remove(item);
+            }
+        }
+
+        private void lbAllLayers_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = lbAllLayers.IndexFromPoint(e.Location);
+            if (index != ListBox.NoMatches)
+            {
+                var item = lbAllLayers.Items[index];
+                lbSelectedLayers.Items.Add(item);
+                lbAllLayers.Items.Remove(item);
+            }
+        }
+
+        public void MoveItem(int direction)
+        {
+            // Checking selected item
+            if (lbCameras.SelectedItem == null || lbCameras.SelectedIndex < 0)
+                return; // No selected item - nothing to do
+
+            // Calculate new index using move direction
+            int newIndex = lbCameras.SelectedIndex + direction;
+
+            // Checking bounds of the range
+            if (newIndex < 0 || newIndex >= lbCameras.Items.Count)
+                return; // Index out of range - nothing to do
+
+            UnifyCamera selected = lbCameras.SelectedItem as UnifyCamera;
+
+            inputData.Cameras.RemoveAt(lbCameras.SelectedIndex);
+            inputData.Cameras.Insert(newIndex, selected);
+
+            ((ListBox)lbCameras).DataSource = null;
+            ((ListBox)lbCameras).DataSource = this.inputData.Cameras;
+            ((ListBox)lbCameras).DisplayMember = "Name";
+
+            // Restore selection
+            lbCameras.SetSelected(newIndex, true);
+        }
+
+        private void btnUp_Click(object sender, System.EventArgs e)
+        {
+            MoveItem(-1);
+        }
+
+        private void btnDown_Click(object sender, System.EventArgs e)
+        {
+            MoveItem(1);
+        }
+
+        private void cbCameras_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            UnifyCamera selected = cbCameras.SelectedValue as UnifyCamera;
         }
     }
 }

@@ -56,6 +56,8 @@
             this.btnAddLayer = new System.Windows.Forms.Button();
             this.lbSelectedLayers = new System.Windows.Forms.ListBox();
             this.lbAllLayers = new System.Windows.Forms.ListBox();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.btnDown = new System.Windows.Forms.Button();
             this.gbCharacterLocation.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -81,6 +83,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnUp);
+            this.panel1.Controls.Add(this.btnDown);
             this.panel1.Controls.Add(this.lbCameras);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.cbCameras);
@@ -94,7 +98,6 @@
             // 
             // lbCameras
             // 
-            this.lbCameras.CheckOnClick = true;
             this.lbCameras.FormattingEnabled = true;
             this.lbCameras.Location = new System.Drawing.Point(305, 44);
             this.lbCameras.Name = "lbCameras";
@@ -118,6 +121,7 @@
             this.cbCameras.Size = new System.Drawing.Size(200, 21);
             this.cbCameras.TabIndex = 2;
             this.cbCameras.Text = "Cameras";
+            this.cbCameras.SelectedIndexChanged += new System.EventHandler(this.cbCameras_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -203,7 +207,7 @@
             this.gbProjectLocation.Size = new System.Drawing.Size(520, 65);
             this.gbProjectLocation.TabIndex = 43;
             this.gbProjectLocation.TabStop = false;
-            this.gbProjectLocation.Text = "Unity Project Location:";
+            this.gbProjectLocation.Text = "Unity Project \"Assets\" Location:";
             // 
             // panel3
             // 
@@ -240,7 +244,7 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(457, 637);
+            this.btnCancel.Location = new System.Drawing.Point(457, 714);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 36);
             this.btnCancel.TabIndex = 49;
@@ -251,7 +255,7 @@
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(376, 637);
+            this.btnExport.Location = new System.Drawing.Point(376, 714);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 36);
             this.btnExport.TabIndex = 48;
@@ -265,7 +269,7 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 573);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 650);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(231, 100);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -275,7 +279,7 @@
             // btnHelp
             // 
             this.btnHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHelp.Location = new System.Drawing.Point(334, 637);
+            this.btnHelp.Location = new System.Drawing.Point(334, 714);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(36, 36);
             this.btnHelp.TabIndex = 50;
@@ -292,10 +296,10 @@
             this.groupBox5.ForeColor = System.Drawing.SystemColors.WindowText;
             this.groupBox5.Location = new System.Drawing.Point(12, 356);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(520, 198);
+            this.groupBox5.Size = new System.Drawing.Size(520, 288);
             this.groupBox5.TabIndex = 51;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Floor Colliders:";
+            this.groupBox5.Text = "Mesh Colliders:";
             // 
             // panel5
             // 
@@ -310,7 +314,7 @@
             this.panel5.ForeColor = System.Drawing.SystemColors.WindowText;
             this.panel5.Location = new System.Drawing.Point(6, 18);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(508, 174);
+            this.panel5.Size = new System.Drawing.Size(508, 264);
             this.panel5.TabIndex = 32;
             // 
             // btnRemoveLayer
@@ -345,8 +349,9 @@
             this.lbSelectedLayers.Location = new System.Drawing.Point(305, 3);
             this.lbSelectedLayers.Name = "lbSelectedLayers";
             this.lbSelectedLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbSelectedLayers.Size = new System.Drawing.Size(200, 160);
+            this.lbSelectedLayers.Size = new System.Drawing.Size(200, 251);
             this.lbSelectedLayers.TabIndex = 1;
+            this.lbSelectedLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbSelectedLayers_MouseDoubleClick);
             // 
             // lbAllLayers
             // 
@@ -356,14 +361,35 @@
             this.lbAllLayers.Location = new System.Drawing.Point(3, 3);
             this.lbAllLayers.Name = "lbAllLayers";
             this.lbAllLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbAllLayers.Size = new System.Drawing.Size(200, 160);
+            this.lbAllLayers.Size = new System.Drawing.Size(200, 251);
             this.lbAllLayers.TabIndex = 0;
+            this.lbAllLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbAllLayers_MouseDoubleClick);
+            // 
+            // btnUp
+            // 
+            this.btnUp.Location = new System.Drawing.Point(211, 75);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(85, 23);
+            this.btnUp.TabIndex = 10;
+            this.btnUp.Text = "↑";
+            this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            // 
+            // btnDown
+            // 
+            this.btnDown.Location = new System.Drawing.Point(211, 104);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(85, 23);
+            this.btnDown.TabIndex = 9;
+            this.btnDown.Text = "↓";
+            this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
             // UnifyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 685);
+            this.ClientSize = new System.Drawing.Size(544, 762);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnCancel);
@@ -422,5 +448,7 @@
         private System.Windows.Forms.Button btnAddLayer;
         private System.Windows.Forms.ListBox lbSelectedLayers;
         private System.Windows.Forms.ListBox lbAllLayers;
+        private System.Windows.Forms.Button btnUp;
+        private System.Windows.Forms.Button btnDown;
     }
 }
