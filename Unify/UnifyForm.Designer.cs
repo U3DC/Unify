@@ -58,6 +58,7 @@
             this.lbAllLayers = new System.Windows.Forms.ListBox();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
+            this.btnPresetRefresh = new System.Windows.Forms.Button();
             this.gbCharacterLocation.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             // lbCameras
             // 
+            this.lbCameras.CheckOnClick = true;
             this.lbCameras.FormattingEnabled = true;
             this.lbCameras.Location = new System.Drawing.Point(305, 44);
             this.lbCameras.Name = "lbCameras";
@@ -146,6 +148,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnPresetRefresh);
             this.panel2.Controls.Add(this.btnDeleteProject);
             this.panel2.Controls.Add(this.tbProjectName);
             this.panel2.Controls.Add(this.btnNewProject);
@@ -159,7 +162,7 @@
             // 
             // btnDeleteProject
             // 
-            this.btnDeleteProject.Location = new System.Drawing.Point(468, 4);
+            this.btnDeleteProject.Location = new System.Drawing.Point(425, 4);
             this.btnDeleteProject.Name = "btnDeleteProject";
             this.btnDeleteProject.Size = new System.Drawing.Size(37, 23);
             this.btnDeleteProject.TabIndex = 8;
@@ -169,15 +172,16 @@
             // 
             // tbProjectName
             // 
-            this.tbProjectName.Location = new System.Drawing.Point(212, 6);
+            this.tbProjectName.Location = new System.Drawing.Point(209, 6);
             this.tbProjectName.Name = "tbProjectName";
-            this.tbProjectName.Size = new System.Drawing.Size(200, 20);
+            this.tbProjectName.Size = new System.Drawing.Size(167, 20);
             this.tbProjectName.TabIndex = 7;
             this.tbProjectName.Text = "Project Name";
             // 
             // btnNewProject
             // 
-            this.btnNewProject.Location = new System.Drawing.Point(418, 4);
+            this.btnNewProject.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNewProject.Location = new System.Drawing.Point(382, 4);
             this.btnNewProject.Name = "btnNewProject";
             this.btnNewProject.Size = new System.Drawing.Size(37, 23);
             this.btnNewProject.TabIndex = 3;
@@ -190,7 +194,7 @@
             this.cbProjects.FormattingEnabled = true;
             this.cbProjects.Location = new System.Drawing.Point(6, 6);
             this.cbProjects.Name = "cbProjects";
-            this.cbProjects.Size = new System.Drawing.Size(200, 21);
+            this.cbProjects.Size = new System.Drawing.Size(197, 21);
             this.cbProjects.TabIndex = 6;
             this.cbProjects.Text = "Projects";
             this.cbProjects.SelectionChangeCommitted += new System.EventHandler(this.cbProjects_SelectionChangeCommitted);
@@ -385,6 +389,16 @@
             this.btnDown.UseVisualStyleBackColor = true;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
+            // btnPresetRefresh
+            // 
+            this.btnPresetRefresh.Location = new System.Drawing.Point(468, 4);
+            this.btnPresetRefresh.Name = "btnPresetRefresh";
+            this.btnPresetRefresh.Size = new System.Drawing.Size(37, 23);
+            this.btnPresetRefresh.TabIndex = 9;
+            this.btnPresetRefresh.Text = "↻";
+            this.btnPresetRefresh.UseVisualStyleBackColor = true;
+            this.btnPresetRefresh.Click += new System.EventHandler(this.btnPresetRefresh_Click);
+            // 
             // UnifyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -450,5 +464,6 @@
         private System.Windows.Forms.ListBox lbAllLayers;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
+        private System.Windows.Forms.Button btnPresetRefresh;
     }
 }
