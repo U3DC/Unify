@@ -1,0 +1,50 @@
+{
+  "AssetsLocation": "E:\\Google Drive\\Work\\UnityProjects\\New Unity Project\\Assets",
+  "OriginCamera": "UnifyCharacter_Origin",
+  "JumpCameras": {
+    "UnifyCharacter_Origin": {
+      "Checked": true,
+      "Index": 0
+    },
+    "Unify_Jump2": {
+      "Checked": true,
+      "Index": 1
+    },
+    "UnifyCharacter_Jump1": {
+      "Checked": true,
+      "Index": 2
+    }
+  },
+  "MeshColliders": {
+    "UnifyGeometry": false,
+    "UnifyGeometry__DesignOption-Mask": false,
+    "UnifyGeometry__DesignOption-Mask__Stone-Travertine": false,
+    "UnifyGeometry__Furniture-Chrome": false,
+    "UnifyGeometry__Furniture-Dark": false,
+    "UnifyGeometry__Furniture-Light": false,
+    "UnifyGeometry__Water": false,
+    "UnifyGeometry__Carpet-Dark": true,
+    "UnifyGeometry__Chrome": true,
+    "UnifyGeometry__DesignOption-BaseBench": true,
+    "UnifyGeometry__DesignOption-BaseBench__Stone-Travertine": true,
+    "UnifyGeometry__DesignOption-ShortBench": true,
+    "UnifyGeometry__DesignOption-ShortBench__Stone-Travertine": true,
+    "UnifyGeometry__Glass-Clear": true,
+    "UnifyGeometry__Glass-Frosted": true,
+    "UnifyGeometry__Ground": true,
+    "UnifyGeometry__Gypsum-Dark": true,
+    "UnifyGeometry__Gypsum-Infill": true,
+    "UnifyGeometry__Infill": true,
+    "UnifyGeometry__Roof-Dark": true,
+    "UnifyGeometry__Roof-White": true,
+    "UnifyGeometry__Statue": true,
+    "UnifyGeometry__Stone-AncientGreen": true,
+    "UnifyGeometry__Stone-Cap": true,
+    "UnifyGeometry__Stone-Cobble": true,
+    "UnifyGeometry__Stone-GoldenOnyx": true,
+    "UnifyGeometry__Stone-GreenApline": true,
+    "UnifyGeometry__Stone-Travertine": true,
+    "UnifyGeometry__Tile-Dark": true,
+    "UnifyGeometry__Tile-Travertine": true
+  }
+}

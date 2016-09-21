@@ -7,11 +7,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 using Unify.UnifyCommon;
 using Unify.Utilities;
 
 namespace Unify
 {
+    public static class SOExtension
+    {
+        public static IEnumerable<TreeNode> FlattenTree(this TreeView tv)
+        {
+            return FlattenTree(tv.Nodes);
+        }
+
+        public static IEnumerable<TreeNode> FlattenTree(this TreeNodeCollection coll)
+        {
+            return coll.Cast<TreeNode>()
+                        .Concat(coll.Cast<TreeNode>()
+                                    .SelectMany(x => FlattenTree(x.Nodes)));
+        }
+    }
+
     public struct ValuePair
     {
         public bool Checked;
@@ -44,14 +60,15 @@ namespace Unify
         public string PluginFolderPath;
         public string UnityProjectPath;
         public List<Guid> ObjToExport;
+        public int NestingLevel;
 
         // assets to be exported
         public List<UnifyCamera> Cameras;
-        public List<UnifyGeometry> Geometry;
         public List<UnifyLight> Lights;
         public List<UnifyMaterial> Materials;
         public List<UnifyMetaData> MetaData;
         public List<UnifyLayer> Layers;
+        public List<UnifyLayer> DesignOptions;
 
         public InputData(RhinoDoc _doc)
         {
@@ -59,11 +76,9 @@ namespace Unify
 
             GetProjects();
             GetLights();
-            GetGeometry();
             GetCameras();
-            GetMaterials();
+            GetMaterialsAndLayers();
             GetMetaData();
-            GetLayers();
         }
 
         public void ProcessExports()
@@ -81,7 +96,7 @@ namespace Unify
             // run Unify settings export
             Dictionary<string, List<object>> exportObjects = new Dictionary<string, List<object>>()
             {
-                { "Geometry", this.Geometry.Cast<object>().ToList() },
+                { "DesignOptions", this.DesignOptions.Cast<object>().ToList() },
                 { "Cameras", this.Cameras.Cast<object>().ToList() },
                 { "Lights", this.Lights.Cast<object>().ToList() },
                 { "Materials", this.Materials.Cast<object>().ToList() },
@@ -127,29 +142,29 @@ namespace Unify
             this.MetaData = allData;
         }
 
-        private void GetLayers()
+        private void GetMaterialsAndLayers()
         {
+            List<UnifyMaterial> matList = new List<UnifyMaterial>();
             List<UnifyLayer> unifyLayers = new List<UnifyLayer>();
-            foreach (Layer l in doc.Layers)
+            this.NestingLevel = 0;
+
+            // get all materials by layers
+            foreach (Layer layer in doc.Layers)
             {
+                // process Layer info
                 UnifyLayer ul = new UnifyLayer();
                 ul.ObjType = "Layer";
-                ul.Guid = l.Id;
-                ul.Name = l.FullPath.Replace(":", "_");
+                ul.Guid = layer.Id;
+                ul.Name = layer.FullPath.Replace(":", "_");
                 ul.MeshCollider = false;
+                ul.Parent = layer.ParentLayerId;
+                ul.Level = layer.FullPath.Split(new string[] { "::" }, StringSplitOptions.None).Count();
+                ul.ShortName = layer.Name;
+
+                if (ul.Level > this.NestingLevel) this.NestingLevel = ul.Level;
                 unifyLayers.Add(ul);
-            }
 
-            this.Layers = unifyLayers;
-        }
-
-        private void GetMaterials()
-        {
-            // get all materials by layers
-            LayerTable allLayers = doc.Layers;
-            List<UnifyMaterial> matList = new List<UnifyMaterial>();
-            foreach (Layer layer in allLayers)
-            {
+                // process material info
                 int renderMatIndex = layer.RenderMaterialIndex;
                 Material rhinoMat = doc.Materials[renderMatIndex];
                 UnifyMaterial mat = new UnifyMaterial();
@@ -175,6 +190,7 @@ namespace Unify
             }
 
             this.Materials = matList;
+            this.Layers = unifyLayers;
         }
 
         private void GetLights()
@@ -234,29 +250,6 @@ namespace Unify
             }
 
             this.Lights = lightList;
-        }
-
-        private void GetGeometry()
-        {
-            // get all geometry objects
-            ObjectTable allObjects = doc.Objects;
-
-            List<Guid> objExport = new List<Guid>();
-            List<UnifyGeometry> geoList = new List<UnifyGeometry>();
-            foreach (RhinoObject ro in allObjects)
-            {
-                UnifyGeometry geo = new UnifyGeometry();
-
-                geo.ObjType = "GeometryObject";
-                geo.Layer = doc.Layers[ro.Attributes.LayerIndex].FullPath.Replace(":", "_");
-                geo.Guid = ro.Id;
-
-                geoList.Add(geo);
-                objExport.Add(ro.Id);
-            }
-
-            this.Geometry = geoList;
-            this.ObjToExport = objExport;
         }
 
         private void GetCameras()
