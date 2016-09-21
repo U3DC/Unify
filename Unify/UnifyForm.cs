@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Unify.UnifyCommon;
 using Unify.Utilities;
@@ -12,6 +15,7 @@ namespace Unify
     {
         InputData inputData;
         string SelectedProject;
+        List<UnifyLayer> checkedNodes = new List<UnifyLayer>();
 
         public UnifyForm(InputData inputData)
         {
@@ -44,9 +48,56 @@ namespace Unify
             lbSelectedLayers.DisplayMember = "Name";
             lbAllLayers.Sorted = true;
 
+            // populate tree view
+            PopulateTreeView(this.inputData.Layers, this.inputData.NestingLevel);
+            treeView1.ExpandAll();
+
             // refresh form
             this.Refresh();
             LoadPresets();
+        }
+
+        private void PopulateTreeView(List<UnifyLayer> data, int levels)
+        {
+            if (data.Count > 0)
+            {
+                List<UnifyLayer> topLevelNodes = data.Where(x => x.Level == 1).ToList();
+
+                List<TreeNode> arrTreeNodes = new List<TreeNode>();
+                foreach (UnifyLayer ul in topLevelNodes)
+                {
+                    TreeNode topNode = new TreeNode();
+                    topNode.Name = ul.ShortName;
+                    topNode.Text = ul.ShortName;
+                    topNode.Tag = ul;
+                    arrTreeNodes.Add(topNode);
+                }
+                treeView1.Nodes.AddRange(arrTreeNodes.ToArray<TreeNode>());
+
+                TreeNode nd = null;
+                for (int i = 2; i < levels + 1; i++)
+                {
+                    List<UnifyLayer> levelXNodes = data.Where(x => x.Level == i).ToList();
+
+                    foreach (UnifyLayer ul in levelXNodes)
+                    {
+                        TreeNode node = new TreeNode();
+                        node.Name = ul.ShortName;
+                        node.Text = ul.ShortName;
+                        node.Tag = ul;
+
+                        nd = treeView1.FlattenTree()
+                            .Where(x => ((UnifyLayer)x.Tag).Guid.Equals(ul.Parent))
+                            .FirstOrDefault();
+
+                        if (nd != null)
+                        {
+                            nd.Nodes.Add(node);
+                        }
+
+                    }
+                }
+            }
         }
 
         private void LoadPresets()
@@ -305,6 +356,9 @@ namespace Unify
                 layer.MeshCollider = false;
             }
 
+            // set layers singled out for design options
+            this.inputData.DesignOptions = this.checkedNodes;
+
             this.inputData.ProcessExports();
 
             // save form presets
@@ -409,6 +463,59 @@ namespace Unify
         private void btnPresetRefresh_Click(object sender, System.EventArgs e)
         {
             LoadPresets();
+        }
+
+        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            // check all child nodes as well
+            if (e.Action != TreeViewAction.Unknown)
+            {
+                UnifyLayer node = (UnifyLayer)e.Node.Tag;
+
+                if (e.Node.Nodes.Count > 0)
+                {
+                    this.CheckAllChildNodes(e.Node, e.Node.Checked, node.Name);
+                }
+                if (e.Node.Checked)
+                {
+                    node.DesignOptionName = node.Name;
+                    this.checkedNodes.Add(node);
+                }
+                else
+                {
+                    node.DesignOptionName = "";
+                    this.checkedNodes.Remove(node);
+                }
+            }
+        }
+
+        private void CheckAllChildNodes(TreeNode treeNode, bool nodeChecked, string parentName)
+        {
+            foreach (TreeNode node in treeNode.Nodes)
+            {
+                node.Checked = nodeChecked;
+                UnifyLayer layer = (UnifyLayer)node.Tag;
+
+                if (nodeChecked)
+                {
+                    layer.DesignOptionName = parentName;
+                    checkedNodes.Add(layer);
+                }
+                else
+                {
+                    layer.DesignOptionName = "";
+                    checkedNodes.Remove(layer);
+                }
+                if (node.Nodes.Count > 0)
+                {
+                    this.CheckAllChildNodes(node, nodeChecked, parentName);
+                }
+            }
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/ksobon/Unify");
         }
     }
 }

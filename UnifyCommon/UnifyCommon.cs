@@ -15,6 +15,10 @@ namespace Unify.UnifyCommon
     public class UnifyLayer : UnifyObject
     {
         public bool MeshCollider { get; set; }
+        public Guid Parent { get; set; }
+        public int Level { get; set; }
+        public string DesignOptionName { get; set; }
+        public string ShortName { get; set; }
 
         public UnifyLayer()
         {
@@ -65,15 +69,6 @@ namespace Unify.UnifyCommon
         public double Transparency { get; set; }
 
         public UnifyMaterial()
-        {
-
-        }
-    }
-    public class UnifyGeometry : UnifyObject
-    {
-        public string Layer { get; set; }
-
-        public UnifyGeometry()
         {
 
         }

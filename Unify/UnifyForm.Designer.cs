@@ -31,12 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UnifyForm));
             this.gbCharacterLocation = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.btnDown = new System.Windows.Forms.Button();
             this.lbCameras = new System.Windows.Forms.CheckedListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.cbCameras = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnPresetRefresh = new System.Windows.Forms.Button();
             this.btnDeleteProject = new System.Windows.Forms.Button();
             this.tbProjectName = new System.Windows.Forms.TextBox();
             this.btnNewProject = new System.Windows.Forms.Button();
@@ -56,9 +59,9 @@
             this.btnAddLayer = new System.Windows.Forms.Button();
             this.lbSelectedLayers = new System.Windows.Forms.ListBox();
             this.lbAllLayers = new System.Windows.Forms.ListBox();
-            this.btnUp = new System.Windows.Forms.Button();
-            this.btnDown = new System.Windows.Forms.Button();
-            this.btnPresetRefresh = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.gbCharacterLocation.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -68,6 +71,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbCharacterLocation
@@ -97,13 +102,33 @@
             this.panel1.Size = new System.Drawing.Size(508, 175);
             this.panel1.TabIndex = 1;
             // 
+            // btnUp
+            // 
+            this.btnUp.Location = new System.Drawing.Point(235, 76);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(37, 23);
+            this.btnUp.TabIndex = 10;
+            this.btnUp.Text = "↑";
+            this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            // 
+            // btnDown
+            // 
+            this.btnDown.Location = new System.Drawing.Point(235, 105);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(37, 23);
+            this.btnDown.TabIndex = 9;
+            this.btnDown.Text = "↓";
+            this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+            // 
             // lbCameras
             // 
             this.lbCameras.CheckOnClick = true;
             this.lbCameras.FormattingEnabled = true;
-            this.lbCameras.Location = new System.Drawing.Point(305, 44);
+            this.lbCameras.Location = new System.Drawing.Point(279, 44);
             this.lbCameras.Name = "lbCameras";
-            this.lbCameras.Size = new System.Drawing.Size(200, 124);
+            this.lbCameras.Size = new System.Drawing.Size(226, 124);
             this.lbCameras.TabIndex = 5;
             // 
             // label2
@@ -118,9 +143,9 @@
             // cbCameras
             // 
             this.cbCameras.FormattingEnabled = true;
-            this.cbCameras.Location = new System.Drawing.Point(305, 12);
+            this.cbCameras.Location = new System.Drawing.Point(279, 12);
             this.cbCameras.Name = "cbCameras";
-            this.cbCameras.Size = new System.Drawing.Size(200, 21);
+            this.cbCameras.Size = new System.Drawing.Size(226, 21);
             this.cbCameras.TabIndex = 2;
             this.cbCameras.Text = "Cameras";
             this.cbCameras.SelectedIndexChanged += new System.EventHandler(this.cbCameras_SelectedIndexChanged);
@@ -159,6 +184,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(508, 35);
             this.panel2.TabIndex = 1;
+            // 
+            // btnPresetRefresh
+            // 
+            this.btnPresetRefresh.Location = new System.Drawing.Point(468, 4);
+            this.btnPresetRefresh.Name = "btnPresetRefresh";
+            this.btnPresetRefresh.Size = new System.Drawing.Size(37, 23);
+            this.btnPresetRefresh.TabIndex = 9;
+            this.btnPresetRefresh.Text = "↻";
+            this.btnPresetRefresh.UseVisualStyleBackColor = true;
+            this.btnPresetRefresh.Click += new System.EventHandler(this.btnPresetRefresh_Click);
             // 
             // btnDeleteProject
             // 
@@ -201,8 +236,6 @@
             // 
             // gbProjectLocation
             // 
-            this.gbProjectLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbProjectLocation.Controls.Add(this.panel3);
             this.gbProjectLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbProjectLocation.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -248,7 +281,7 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(457, 714);
+            this.btnCancel.Location = new System.Drawing.Point(797, 714);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 36);
             this.btnCancel.TabIndex = 49;
@@ -259,7 +292,7 @@
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(376, 714);
+            this.btnExport.Location = new System.Drawing.Point(716, 714);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 36);
             this.btnExport.TabIndex = 48;
@@ -283,18 +316,18 @@
             // btnHelp
             // 
             this.btnHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHelp.Location = new System.Drawing.Point(334, 714);
+            this.btnHelp.Location = new System.Drawing.Point(674, 714);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(36, 36);
             this.btnHelp.TabIndex = 50;
             this.btnHelp.Text = "?";
             this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // groupBox5
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox5.Controls.Add(this.panel5);
             this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -325,9 +358,9 @@
             // 
             this.btnRemoveLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRemoveLayer.Location = new System.Drawing.Point(211, 91);
+            this.btnRemoveLayer.Location = new System.Drawing.Point(235, 91);
             this.btnRemoveLayer.Name = "btnRemoveLayer";
-            this.btnRemoveLayer.Size = new System.Drawing.Size(85, 23);
+            this.btnRemoveLayer.Size = new System.Drawing.Size(37, 23);
             this.btnRemoveLayer.TabIndex = 3;
             this.btnRemoveLayer.Text = "<";
             this.btnRemoveLayer.UseVisualStyleBackColor = true;
@@ -337,9 +370,9 @@
             // 
             this.btnAddLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddLayer.Location = new System.Drawing.Point(211, 62);
+            this.btnAddLayer.Location = new System.Drawing.Point(235, 62);
             this.btnAddLayer.Name = "btnAddLayer";
-            this.btnAddLayer.Size = new System.Drawing.Size(85, 23);
+            this.btnAddLayer.Size = new System.Drawing.Size(37, 23);
             this.btnAddLayer.TabIndex = 2;
             this.btnAddLayer.Text = ">";
             this.btnAddLayer.UseVisualStyleBackColor = true;
@@ -350,10 +383,10 @@
             this.lbSelectedLayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lbSelectedLayers.FormattingEnabled = true;
-            this.lbSelectedLayers.Location = new System.Drawing.Point(305, 3);
+            this.lbSelectedLayers.Location = new System.Drawing.Point(279, 3);
             this.lbSelectedLayers.Name = "lbSelectedLayers";
             this.lbSelectedLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbSelectedLayers.Size = new System.Drawing.Size(200, 251);
+            this.lbSelectedLayers.Size = new System.Drawing.Size(226, 251);
             this.lbSelectedLayers.TabIndex = 1;
             this.lbSelectedLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbSelectedLayers_MouseDoubleClick);
             // 
@@ -365,45 +398,56 @@
             this.lbAllLayers.Location = new System.Drawing.Point(3, 3);
             this.lbAllLayers.Name = "lbAllLayers";
             this.lbAllLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbAllLayers.Size = new System.Drawing.Size(200, 251);
+            this.lbAllLayers.Size = new System.Drawing.Size(226, 251);
             this.lbAllLayers.TabIndex = 0;
             this.lbAllLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbAllLayers_MouseDoubleClick);
             // 
-            // btnUp
+            // groupBox1
             // 
-            this.btnUp.Location = new System.Drawing.Point(211, 75);
-            this.btnUp.Name = "btnUp";
-            this.btnUp.Size = new System.Drawing.Size(85, 23);
-            this.btnUp.TabIndex = 10;
-            this.btnUp.Text = "↑";
-            this.btnUp.UseVisualStyleBackColor = true;
-            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.panel4);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.groupBox1.Location = new System.Drawing.Point(538, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(334, 632);
+            this.groupBox1.TabIndex = 52;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Design Options:";
             // 
-            // btnDown
+            // panel4
             // 
-            this.btnDown.Location = new System.Drawing.Point(211, 104);
-            this.btnDown.Name = "btnDown";
-            this.btnDown.Size = new System.Drawing.Size(85, 23);
-            this.btnDown.TabIndex = 9;
-            this.btnDown.Text = "↓";
-            this.btnDown.UseVisualStyleBackColor = true;
-            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel4.Controls.Add(this.treeView1);
+            this.panel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panel4.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.panel4.Location = new System.Drawing.Point(6, 18);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(322, 608);
+            this.panel4.TabIndex = 32;
             // 
-            // btnPresetRefresh
+            // treeView1
             // 
-            this.btnPresetRefresh.Location = new System.Drawing.Point(468, 4);
-            this.btnPresetRefresh.Name = "btnPresetRefresh";
-            this.btnPresetRefresh.Size = new System.Drawing.Size(37, 23);
-            this.btnPresetRefresh.TabIndex = 9;
-            this.btnPresetRefresh.Text = "↻";
-            this.btnPresetRefresh.UseVisualStyleBackColor = true;
-            this.btnPresetRefresh.Click += new System.EventHandler(this.btnPresetRefresh_Click);
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.CheckBoxes = true;
+            this.treeView1.Location = new System.Drawing.Point(3, 3);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(316, 602);
+            this.treeView1.TabIndex = 45;
+            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             // 
             // UnifyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 762);
+            this.ClientSize = new System.Drawing.Size(884, 762);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnCancel);
@@ -429,6 +473,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -465,5 +511,8 @@
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnPresetRefresh;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
