@@ -1,7 +1,7 @@
 #Unify
 ####Rhino to Unity exporter
 
-![](https://github.com/ksobon/Unify/blob/master/_Icons/UnifyLogo-01.png?raw=true)
+![](https://github.com/ksobon/Unify/blob/master/_Icons/UnifyIcons-01.png?raw=true)
 
 This is work in progress...still.
 
