@@ -46,6 +46,7 @@ namespace Unify
         public string OriginCamera { get; set; }
         public Dictionary<string, ValuePair> JumpCameras { get; set; }
         public Dictionary<string, bool> MeshColliders { get; set; }
+        public Dictionary<string, bool> DesignOptions { get; set; }
 
         public FormPresets()
         {
@@ -79,6 +80,7 @@ namespace Unify
             GetCameras();
             GetMaterialsAndLayers();
             GetMetaData();
+            GetGeometry();
         }
 
         public void ProcessExports()
@@ -109,6 +111,16 @@ namespace Unify
             };
             string json = JsonConvert.SerializeObject(exportObjects, Formatting.Indented, settings);
             File.WriteAllText(this.UnityProjectPath + @"\Resources\" + "UnifySettings.txt", json);
+        }
+
+        private void GetGeometry()
+        {
+            List<Guid> objExport = new List<Guid>();
+            foreach (RhinoObject ro in doc.Objects)
+            {
+                objExport.Add(ro.Id);
+            }
+            this.ObjToExport = objExport;
         }
 
         private void GetProjects()

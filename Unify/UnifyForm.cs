@@ -16,6 +16,7 @@ namespace Unify
         InputData inputData;
         string SelectedProject;
         List<UnifyLayer> checkedNodes = new List<UnifyLayer>();
+        private Dictionary<string, bool> designOptions = new Dictionary<string, bool>();
 
         public UnifyForm(InputData inputData)
         {
@@ -112,58 +113,85 @@ namespace Unify
 
             if (presets != null)
             {
-                // set project path and input data
-                tbFolderPath.Text = presets.AssetsLocation;
-                this.inputData.UnityProjectPath = presets.AssetsLocation;
-
-                // set selected origin camera
-                int index = cbCameras.FindStringExact(presets.OriginCamera);
-                if (index != -1)
+                if (presets.AssetsLocation != null)
                 {
-                    cbCameras.SelectedIndex = index;
+                    // set project path and input data
+                    tbFolderPath.Text = presets.AssetsLocation;
+                    this.inputData.UnityProjectPath = presets.AssetsLocation;
                 }
 
-                // set jump cameras
-                // modify source list order
-                for (int i = 0; i < lbCameras.Items.Count; i++)
+                if (presets.OriginCamera != null)
                 {
-                    UnifyCamera cam = lbCameras.Items[i] as UnifyCamera;
-                    if (presets.JumpCameras.ContainsKey(cam.Name))
+                    // set selected origin camera
+                    int index = cbCameras.FindStringExact(presets.OriginCamera);
+                    if (index != -1)
                     {
-                        this.inputData.Cameras.Remove(cam);
-                        this.inputData.Cameras.Insert(presets.JumpCameras[cam.Name].Index, cam);
+                        cbCameras.SelectedIndex = index;
                     }
                 }
+
+                if (presets.JumpCameras != null)
+                {
+                    // set jump cameras
+                    // modify source list order
+                    for (int i = 0; i < lbCameras.Items.Count; i++)
+                    {
+                        UnifyCamera cam = lbCameras.Items[i] as UnifyCamera;
+                        if (presets.JumpCameras.ContainsKey(cam.Name))
+                        {
+                            this.inputData.Cameras.Remove(cam);
+                            this.inputData.Cameras.Insert(presets.JumpCameras[cam.Name].Index, cam);
+                        }
+                    }
 
                 // re-set the list box bounding to re-set the order.
                 ((ListBox)lbCameras).DataSource = null;
-                ((ListBox)lbCameras).DataSource = this.inputData.Cameras;
-                ((ListBox)lbCameras).DisplayMember = "Name";
+                    ((ListBox)lbCameras).DataSource = this.inputData.Cameras;
+                    ((ListBox)lbCameras).DisplayMember = "Name";
 
-                // set check boxes
-                foreach (KeyValuePair<string, ValuePair> item in presets.JumpCameras)
-                {
-                    int index1 = lbCameras.FindStringExact(item.Key);
-                    if (index1 != -1)
+                    // set check boxes
+                    foreach (KeyValuePair<string, ValuePair> item in presets.JumpCameras)
                     {
-                        lbCameras.SetItemCheckState(index1, item.Value.Checked == true ? CheckState.Checked : CheckState.Unchecked);
+                        int index1 = lbCameras.FindStringExact(item.Key);
+                        if (index1 != -1)
+                        {
+                            lbCameras.SetItemCheckState(index1, item.Value.Checked == true ? CheckState.Checked : CheckState.Unchecked);
+                        }
                     }
                 }
 
-                // set nesh colliders
-                foreach (KeyValuePair<string, bool> item in presets.MeshColliders)
+                if (presets.MeshColliders != null)
                 {
-                    int index2 = lbAllLayers.FindStringExact(item.Key);
-                    int index3 = lbSelectedLayers.FindStringExact(item.Key);
-                    if (index2 != -1 && item.Value == true)
+                    // set nesh colliders
+                    foreach (KeyValuePair<string, bool> item in presets.MeshColliders)
                     {
-                        lbSelectedLayers.Items.Add(lbAllLayers.Items[index2]);
-                        lbAllLayers.Items.RemoveAt(index2);
+                        int index2 = lbAllLayers.FindStringExact(item.Key);
+                        int index3 = lbSelectedLayers.FindStringExact(item.Key);
+                        if (index2 != -1 && item.Value == true)
+                        {
+                            lbSelectedLayers.Items.Add(lbAllLayers.Items[index2]);
+                            lbAllLayers.Items.RemoveAt(index2);
+                        }
+                        if (index3 != -1 && item.Value == false)
+                        {
+                            lbAllLayers.Items.Add(lbSelectedLayers.Items[index3]);
+                            lbSelectedLayers.Items.RemoveAt(index3);
+                        }
                     }
-                    if (index3 != -1 && item.Value == false)
+                }
+
+                if (presets.DesignOptions != null)
+                {
+                    // set Design Options
+                    TreeNode nd = null;
+                    IEnumerable<TreeNode> treeViewFlat = treeView1.FlattenTree();
+                    foreach (KeyValuePair<string, bool> item in presets.DesignOptions)
                     {
-                        lbAllLayers.Items.Add(lbSelectedLayers.Items[index3]);
-                        lbSelectedLayers.Items.RemoveAt(index3);
+                        nd = treeViewFlat.Where(x => ((UnifyLayer)x.Tag).Name == item.Key).FirstOrDefault();
+                        if (nd != null)
+                        {
+                            nd.Checked = item.Value;
+                        }
                     }
                 }
             }
@@ -210,10 +238,32 @@ namespace Unify
             }
             presets.MeshColliders = meshColliders;
 
+            // save design options
+            this.designOptions = new Dictionary<string, bool>();
+            SerializeTreeView(treeView1);
+            presets.DesignOptions = this.designOptions;
 
             // write to project file
             string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
             File.WriteAllText(this.SelectedProject, json);
+        }
+
+        private void StoreNodeRecursive(TreeNode treeNode)
+        {
+            designOptions.Add(((UnifyLayer)treeNode.Tag).Name, treeNode.Checked);
+            foreach (TreeNode tn in treeNode.Nodes)
+            {
+                StoreNodeRecursive(tn);
+            }
+        }
+
+        private void SerializeTreeView(TreeView treeView)
+        {
+            TreeNodeCollection nodes = treeView.Nodes;
+            foreach (TreeNode n in nodes)
+            {
+                StoreNodeRecursive(n);
+            }
         }
 
         private void PopulateDropdownDictionary<TKey, TValue>(ComboBox control, SortedDictionary<TKey, TValue> dict)
