@@ -371,6 +371,12 @@ namespace Unify
 
         private void btnExport_Click(object sender, System.EventArgs e)
         {
+            // in case that user used copy/paste to add new asset path
+            // check if stored asset path is different than current one and update
+            if (tbFolderPath.Text != this.inputData.UnityProjectPath)
+            {
+                this.inputData.UnityProjectPath = tbFolderPath.Text;
+            }
             // deploy assets to specified Unity location
             if (this.inputData.UnityProjectPath != null)
             {
