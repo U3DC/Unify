@@ -22,6 +22,20 @@ There is also an effort being put into making the Unity experience better and ge
   - Date and Time picker (controls location of sun)
   - Screenshots (using "P" hotkey while "in game")
 
+#Installation Instructions:
+
+1. Download the _RhinoPlugin folder and place it in C:\Program Files\Rhinoceros 5 (64-bit)\Plug-ins (typical installation location for Rhino plug-ins but may vary per user).
+
+#Unify plug-in use instructions:
+
+1. Create new Unity 3D project. This will autoamtically generate an Assets folder. 
+2. Open Rhino and type in "UnifyExport". This will bring up the Unify window. 
+3. Set the Assets location to the previously created project's Asset Folder. That's where Unify will deploy all of your Rhino assets. 
+4. Go back to Unity. It will recognize that new assets have been added to project and load them in. You should now have a new Tab on the menu bar called "Unify". It will contain two methods: 1.ImportAssets and 2.ProcessAssets.
+5. First run 1.ImportAssets. That will unpack the Unify assets and all scripts.
+6. Second run 2.ProcessAssets. That will place the model in a scene, process all materials, lights, etc. 
+7. Hit Play and enjoy! 
+
 License
 ============
 
