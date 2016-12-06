@@ -91,7 +91,7 @@ namespace Unify
             string objOptions = Utility.GetOBJOptions();
             string fileName = "\\" + Path.GetFileNameWithoutExtension(doc.Name) + ".obj";
             string filePath = "\"" + this.UnityProjectPath + "\\Resources\\Model" + fileName + "\" ";
-            string script = string.Concat("_-Export ", filePath, objOptions, " y=y", " _Enter _Enter");
+            string script = string.Concat("_-Export ", filePath, objOptions, " _Enter _Enter");
             RhinoApp.RunScript(script, true);
             RhinoApp.RunScript("_-SelNone", true);
 
