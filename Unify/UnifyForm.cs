@@ -49,7 +49,7 @@ namespace Unify
             lbSelectedLayers.DisplayMember = "Name";
             lbAllLayers.Sorted = true;
 
-            // populate tree view
+            // populate tree view (design options)
             PopulateTreeView(this.inputData.Layers, this.inputData.NestingLevel);
             treeView1.ExpandAll();
 
@@ -180,6 +180,7 @@ namespace Unify
                     }
                 }
 
+                this.checkedNodes = new List<UnifyLayer>();
                 if (presets.DesignOptions != null)
                 {
                     // set Design Options
@@ -191,6 +192,12 @@ namespace Unify
                         if (nd != null)
                         {
                             nd.Checked = item.Value;
+
+                            // if node is checked also add it to checked node list
+                            if (item.Value)
+                            {
+                                this.checkedNodes.Add((UnifyLayer)nd.Tag);
+                            }
                         }
                     }
                 }
