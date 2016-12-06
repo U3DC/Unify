@@ -1,6 +1,6 @@
 {
-  "AssetsLocation": "E:\\Google Drive\\Work\\UnityProjects\\whateverFile\\Assets",
-  "OriginCamera": "UnifyCharacter_Origin",
+  "AssetsLocation": "E:\\Google Drive\\Work\\UnityProjects\\New Unity Project\\Assets",
+  "OriginCamera": "Unify_Jump2",
   "JumpCameras": {
     "UnifyCharacter_Origin": {
       "Checked": true,
@@ -16,14 +16,6 @@
     }
   },
   "MeshColliders": {
-    "UnifyGeometry": false,
-    "UnifyGeometry__Carpet-Dark": false,
-    "UnifyGeometry__DesignOption-Mask": false,
-    "UnifyGeometry__DesignOption-Mask__Stone-Travertine": false,
-    "UnifyGeometry__Furniture-Chrome": false,
-    "UnifyGeometry__Furniture-Dark": false,
-    "UnifyGeometry__Furniture-Light": false,
-    "UnifyGeometry__Water": false,
     "UnifyGeometry__Chrome": true,
     "UnifyGeometry__DesignOption-BaseBench": true,
     "UnifyGeometry__DesignOption-BaseBench__Stone-Travertine": true,
@@ -45,7 +37,15 @@
     "UnifyGeometry__Stone-GreenApline": true,
     "UnifyGeometry__Stone-Travertine": true,
     "UnifyGeometry__Tile-Dark": true,
-    "UnifyGeometry__Tile-Travertine": true
+    "UnifyGeometry__Tile-Travertine": true,
+    "UnifyGeometry": true,
+    "UnifyGeometry__Carpet-Dark": true,
+    "UnifyGeometry__DesignOption-Mask": true,
+    "UnifyGeometry__DesignOption-Mask__Stone-Travertine": true,
+    "UnifyGeometry__Furniture-Chrome": true,
+    "UnifyGeometry__Furniture-Dark": true,
+    "UnifyGeometry__Furniture-Light": true,
+    "UnifyGeometry__Water": true
   },
   "DesignOptions": {
     "UnifyGeometry": false,
@@ -57,26 +57,26 @@
     "UnifyGeometry__Gypsum-Dark": false,
     "UnifyGeometry__Roof-White": false,
     "UnifyGeometry__Roof-Dark": false,
-    "UnifyGeometry__Stone-GoldenOnyx": false,
-    "UnifyGeometry__Stone-AncientGreen": false,
-    "UnifyGeometry__Stone-GreenApline": false,
-    "UnifyGeometry__Stone-Travertine": false,
-    "UnifyGeometry__Stone-Cobble": false,
-    "UnifyGeometry__Stone-Cap": false,
+    "UnifyGeometry__Stone-GoldenOnyx": true,
+    "UnifyGeometry__Stone-AncientGreen": true,
+    "UnifyGeometry__Stone-GreenApline": true,
+    "UnifyGeometry__Stone-Travertine": true,
+    "UnifyGeometry__Stone-Cobble": true,
+    "UnifyGeometry__Stone-Cap": true,
     "UnifyGeometry__Tile-Dark": false,
-    "UnifyGeometry__Tile-Travertine": true,
+    "UnifyGeometry__Tile-Travertine": false,
     "UnifyGeometry__Water": true,
-    "UnifyGeometry__Ground": true,
-    "UnifyGeometry__Furniture-Light": false,
+    "UnifyGeometry__Ground": false,
+    "UnifyGeometry__Furniture-Light": true,
     "UnifyGeometry__Furniture-Dark": false,
     "UnifyGeometry__Furniture-Chrome": false,
     "UnifyGeometry__Statue": false,
-    "UnifyGeometry__Infill": true,
-    "UnifyGeometry__DesignOption-BaseBench": true,
-    "UnifyGeometry__DesignOption-BaseBench__Stone-Travertine": true,
-    "UnifyGeometry__DesignOption-Mask": true,
-    "UnifyGeometry__DesignOption-Mask__Stone-Travertine": true,
-    "UnifyGeometry__DesignOption-ShortBench": true,
-    "UnifyGeometry__DesignOption-ShortBench__Stone-Travertine": true
+    "UnifyGeometry__Infill": false,
+    "UnifyGeometry__DesignOption-BaseBench": false,
+    "UnifyGeometry__DesignOption-BaseBench__Stone-Travertine": false,
+    "UnifyGeometry__DesignOption-Mask": false,
+    "UnifyGeometry__DesignOption-Mask__Stone-Travertine": false,
+    "UnifyGeometry__DesignOption-ShortBench": false,
+    "UnifyGeometry__DesignOption-ShortBench__Stone-Travertine": false
   }
 }

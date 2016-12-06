@@ -16,7 +16,7 @@ public class ImportAssets : MonoBehaviour
     private static Dictionary<string, List<object>> deserialized;
     private static bool hudLoaded;
 
-    [MenuItem("Unify/1.ProcessAssets")]
+    [MenuItem("Unify/2.ProcessAssets")]
     static void ProcessAssets()
     {
         DeserializeJson();
