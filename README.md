@@ -39,7 +39,7 @@ There is also an effort being put into making the Unity experience better and ge
 # Known Issues
 - Rhino file needs to be saved (have a filename) for the .obj to export correctly.
 - UnifyExport may be unable to autocreate a Assets\Resources\Model folder. After running UnifyExport the first time, create a Model folder in your Assets\Resources path and run UnifyExport again.
-- For later versions of Unity, you will need to set your Scripting Runtime Version and API compatibility to 4.x (or as high as it will let you go) see how to do so ![here](https://docs.unity3d.com/Manual/ScriptingRuntimeUpgrade.html).
+- For later versions of Unity, you will need to set your Scripting Runtime Version and API compatibility to 4.x (or as high as it will let you go) see how to do so [here](https://docs.unity3d.com/Manual/ScriptingRuntimeUpgrade.html).
 
 
 License
