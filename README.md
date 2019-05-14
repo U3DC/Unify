@@ -1,11 +1,11 @@
-#Unify
-####Rhino to Unity exporter
+# Unify
+#### Rhino to Unity exporter
 
 ![](https://github.com/ksobon/Unify/blob/master/_Icons/UnifyIcons-01.png?raw=true)
 
 This is work in progress...still.
 
-#Agenda:
+# Agenda:
 
 The idea is to create a streamlined pipeline from Rhino to Unity. So far and what have been posted on this github page we have a Rhino exporter plug-in that writes the OBJ file along with a UnifySettings.txt file that contains meta-data information about the Rhino file. For example the TXT file will have information about Lights, Cameras, Materials etc so that it can be used to re-create these assets in Unity without a need to manually place and update them. 
 
@@ -13,7 +13,7 @@ The Unity side has not yet, been posted as it is an early WIP, but so far we wer
 
 There is also an effort being put into making the Unity experience better and geared towards Architects. We have put together a HUD display that can be activated using a "M" key while "in-game". Once that is activated you can choose to set a handful of things like turn on design options layers, change camera height or simply teleport yourself to a different location.
 
-#Features:
+# Features:
 
 1. Obj export of Rhino Geometry to Unity Projects. 
 2. HUD Display that contains a few things:
@@ -22,7 +22,7 @@ There is also an effort being put into making the Unity experience better and ge
   - Date and Time picker (controls location of sun)
   - Screenshots (using "P" hotkey while "in game")
 
-#Installation Instructions:
+# Installation Instructions:
 
 1. Download the _RhinoPlugin folder and place it in C:\Program Files\Rhinoceros 5 (64-bit)\Plug-ins (typical installation location for Rhino plug-ins but may vary per user).
 
@@ -35,6 +35,12 @@ There is also an effort being put into making the Unity experience better and ge
 5. First run 1.ImportAssets. That will unpack the Unify assets and all scripts.
 6. Second run 2.ProcessAssets. That will place the model in a scene, process all materials, lights, etc. 
 7. Hit Play and enjoy! 
+
+# Known Issues
+- Rhino file needs to be saved (have a filename) for the .obj to export correctly.
+- UnifyExport may be unable to autocreate a Assets\Resources\Model folder. After running UnifyExport the first time, create a Model folder in your Assets\Resources path and run UnifyExport again.
+- For later versions of Unity, you will need to set your Scripting Runtime Version and API compatibility to 4.x (or as high as it will let you go) see how to do so ![here](https://docs.unity3d.com/Manual/ScriptingRuntimeUpgrade.html).
+
 
 License
 ============
